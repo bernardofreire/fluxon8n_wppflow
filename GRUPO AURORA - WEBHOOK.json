@@ -1,0 +1,449 @@
+{
+  "name": "GRUPO AURORA - WEBHOOK",
+  "nodes": [
+    {
+      "parameters": {
+        "multipleMethods": true,
+        "path": "6f2624e8-0174-4eed-905a-525daa816791",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -176,
+        -64
+      ],
+      "id": "928bba22-9a75-4b00-9502-ac36b000a09c",
+      "name": "Whatsapp Webhook",
+      "webhookId": "6f2624e8-0174-4eed-905a-525daa816791",
+      "notes": "1 URL UNICA POR BM (Grupo Aurora). Recebe TODOS os numeros de TODAS as WABAs desta BM. URL final: https://<n8n>/webhook/6f2624e8-0174-4eed-905a-525daa816791 (mesma para verificacao GET e mensagens POST)."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "verify-1",
+              "leftValue": "={{ $json.query['hub.mode'] }}",
+              "rightValue": "subscribe",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        128,
+        -256
+      ],
+      "id": "d48af837-6159-4db0-8415-822d370a6630",
+      "name": "Is Verify Request?"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.query[\"hub.challenge\"] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        368,
+        -256
+      ],
+      "id": "7b416fd5-7139-4546-aa75-5e5a85ebf602",
+      "name": "Verify Webhook (GET)"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "OK",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        128,
+        144
+      ],
+      "id": "36e84d58-6fcf-4f36-b8eb-b07a82aa3379",
+      "name": "ACK 200 OK",
+      "notes": "CRITICO: responde 200 IMEDIATAMENTE para o Meta nao retentar. Roda antes de qualquer processamento."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Filter robusto: descarta statuses, system events e payloads sem message real.\n// Meta manda 3 tipos no mesmo webhook:\n//  - messages: mensagem real do cliente (queremos processar)\n//  - statuses: delivered/read/failed das NOSSAS mensagens (descartar)\n//  - system: notificacoes Meta (descartar)\n\nconst body = $input.first().json.body || {};\nconst entry = body.entry?.[0];\nconst change = entry?.changes?.[0];\nconst value = change?.value || {};\n\n// Se nao tem array messages com pelo menos 1 item, descarta\nconst messages = value.messages;\nif (!Array.isArray(messages) || messages.length === 0) {\n  return [];\n}\n\nconst msg = messages[0];\n\n// Mensagem precisa ter id (wamid) e from\nif (!msg.id || !msg.from) {\n  return [];\n}\n\n// waba_id (entry[0].id) -> identifica a WABA dentro da BM (Filtro 1)\nconst wabaId = entry?.id;\nif (!wabaId) {\n  return [];\n}\n\n// metadata.phone_number_id -> identifica a unidade/numero (Filtro 2)\nconst phoneNumberId = value.metadata?.phone_number_id;\nif (!phoneNumberId) {\n  return [];\n}\n\nreturn [{\n  json: {\n    message_id: msg.id,\n    waba_id: wabaId,\n    phone_number_id: phoneNumberId,\n    body: body,\n    message: msg,\n    contact: value.contacts?.[0] || {},\n    metadata: value.metadata\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        368,
+        144
+      ],
+      "id": "e1da2474-722f-4dc3-a2a8-c93cdac1aae4",
+      "name": "Filter & Extract"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "waba-cantina",
+                    "leftValue": "={{ $json.waba_id }}",
+                    "rightValue": "WABA_ID_CANTINA_TROCAR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Restaurante"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "waba-clinica",
+                    "leftValue": "={{ $json.waba_id }}",
+                    "rightValue": "WABA_ID_CLINICA_TROCAR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Clinica"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        608,
+        128
+      ],
+      "id": "9c12b350-1ae1-4138-9c52-ed88838aa918",
+      "name": "Filtro 1 · WABA",
+      "notes": "Roteia por entry[0].id (waba_id). Saida extra (fallback) = WABA nao mapeada nesta BM."
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "pn-agendamento",
+                    "leftValue": "={{ $json.phone_number_id }}",
+                    "rightValue": "PHONE_NUMBER_ID_AGENDAMENTO_TROCAR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Agendamento"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        960,
+        144
+      ],
+      "id": "cfc7f21e-7386-48fc-9301-f01fe1b28fcc",
+      "name": "Filtro 2 · Clínica",
+      "notes": "Roteia por phone_number_id dentro da WABA Clinica. Hoje o numero real ativo eh o de AGENDAMENTO de sessao (use a saida Agendamento)."
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "SUB_WF_AGENDAMENTO_ID_TROCAR",
+          "mode": "id",
+          "cachedResultName": "Agendamento (TROCAR)"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {}
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1344,
+        128
+      ],
+      "id": "f95140b1-f51e-4f1b-aa43-6ffcd875cbb8",
+      "name": "Agendamento",
+      "notes": "Sub-workflow da CLINICA (agendamento de sessao). Ja existe hoje - cole aqui o ID real do fluxo."
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1344,
+        384
+      ],
+      "id": "f1e30cb2-e874-4f53-b9ef-7c67829e69a2",
+      "name": "WABA/Número não mapeado",
+      "notes": "Recebe mensagens cujo waba_id ou phone_number_id nao bate com nenhuma regra. Ponto unico para log/alerta ao cadastrar numero novo."
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "pn-reservas",
+                    "leftValue": "={{ $json.phone_number_id }}",
+                    "rightValue": "PHONE_NUMBER_ID_RESERVAS_TROCAR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Reservas"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        960,
+        -80
+      ],
+      "id": "e991621d-81aa-4940-8b4b-7a43dd64a9a0",
+      "name": "Filtro 2 · Restaurante",
+      "notes": "Roteia por phone_number_id dentro da WABA Cantina. Hoje o numero real ativo eh o de PEDIDOS do restaurante (use a saida Reservas)."
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "VWOE9Ung4fEsQ13j",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/VWOE9Ung4fEsQ13j",
+          "cachedResultName": "AURORA - Restaurante"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1344,
+        -96
+      ],
+      "id": "8c9cac53-9dfe-4cc6-b56a-94671d8c7bc4",
+      "name": "Pedidos",
+      "notes": "Sub-workflow do RESTAURANTE (pedidos). Unico que ja existe hoje - cole aqui o ID real do fluxo."
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Whatsapp Webhook": {
+      "main": [
+        [
+          {
+            "node": "Is Verify Request?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ACK 200 OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Verify Request?": {
+      "main": [
+        [
+          {
+            "node": "Verify Webhook (GET)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ACK 200 OK": {
+      "main": [
+        [
+          {
+            "node": "Filter & Extract",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter & Extract": {
+      "main": [
+        [
+          {
+            "node": "Filtro 1 · WABA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtro 1 · WABA": {
+      "main": [
+        [
+          {
+            "node": "Filtro 2 · Restaurante",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Filtro 2 · Clínica",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WABA/Número não mapeado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtro 2 · Clínica": {
+      "main": [
+        [
+          {
+            "node": "Agendamento",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WABA/Número não mapeado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtro 2 · Restaurante": {
+      "main": [
+        [
+          {
+            "node": "Pedidos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WABA/Número não mapeado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "6feb74e2-bc49-4d38-a3bd-2d35652ea252",
+  "meta": {
+    "instanceId": "bf9c0705358f3424eb1d41219c56e9c5f5a259e2443c6a07b72a86e802497145"
+  },
+  "id": "COJ2s48e6hF8LAFy",
+  "tags": []
+}
