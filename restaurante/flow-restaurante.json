@@ -21,7 +21,15 @@
       "id": "PRODUCTS",
       "title": "Cardápio",
       "data": {
-        "products": {
+        "cat_1_name": {
+          "type": "string",
+          "__example__": "Food"
+        },
+        "cat_1_visible": {
+          "type": "boolean",
+          "__example__": true
+        },
+        "cat_1_items": {
           "type": "array",
           "items": {
             "type": "object",
@@ -39,14 +47,226 @@
           },
           "__example__": [
             {
-              "id": "1",
-              "title": "X-Burger",
-              "description": "R$ 25,00"
-            },
+              "id": "88",
+              "title": "Almoço Maki 18 pc",
+              "description": "R$ 12,00"
+            }
+          ]
+        },
+        "cat_2_name": {
+          "type": "string",
+          "__example__": ""
+        },
+        "cat_2_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "cat_2_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
             {
-              "id": "2",
-              "title": "Coca-Cola Lata",
-              "description": "R$ 7,00"
+              "id": "_",
+              "title": "-"
+            }
+          ]
+        },
+        "cat_3_name": {
+          "type": "string",
+          "__example__": ""
+        },
+        "cat_3_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "cat_3_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
+            {
+              "id": "_",
+              "title": "-"
+            }
+          ]
+        },
+        "cat_4_name": {
+          "type": "string",
+          "__example__": ""
+        },
+        "cat_4_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "cat_4_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
+            {
+              "id": "_",
+              "title": "-"
+            }
+          ]
+        },
+        "cat_5_name": {
+          "type": "string",
+          "__example__": ""
+        },
+        "cat_5_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "cat_5_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
+            {
+              "id": "_",
+              "title": "-"
+            }
+          ]
+        },
+        "cat_6_name": {
+          "type": "string",
+          "__example__": ""
+        },
+        "cat_6_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "cat_6_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
+            {
+              "id": "_",
+              "title": "-"
+            }
+          ]
+        },
+        "cat_7_name": {
+          "type": "string",
+          "__example__": ""
+        },
+        "cat_7_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "cat_7_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
+            {
+              "id": "_",
+              "title": "-"
+            }
+          ]
+        },
+        "cat_8_name": {
+          "type": "string",
+          "__example__": ""
+        },
+        "cat_8_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "cat_8_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
+            {
+              "id": "_",
+              "title": "-"
             }
           ]
         }
@@ -60,14 +280,71 @@
           },
           {
             "type": "TextBody",
-            "text": "Selecione os itens que deseja."
+            "text": "Selecione os itens de cada categoria."
           },
           {
             "type": "CheckboxGroup",
-            "name": "selected_products",
-            "label": "Itens do cardápio",
-            "required": true,
-            "data-source": "${data.products}"
+            "name": "cat_1_products",
+            "label": "${data.cat_1_name}",
+            "required": false,
+            "visible": "${data.cat_1_visible}",
+            "data-source": "${data.cat_1_items}"
+          },
+          {
+            "type": "CheckboxGroup",
+            "name": "cat_2_products",
+            "label": "${data.cat_2_name}",
+            "required": false,
+            "visible": "${data.cat_2_visible}",
+            "data-source": "${data.cat_2_items}"
+          },
+          {
+            "type": "CheckboxGroup",
+            "name": "cat_3_products",
+            "label": "${data.cat_3_name}",
+            "required": false,
+            "visible": "${data.cat_3_visible}",
+            "data-source": "${data.cat_3_items}"
+          },
+          {
+            "type": "CheckboxGroup",
+            "name": "cat_4_products",
+            "label": "${data.cat_4_name}",
+            "required": false,
+            "visible": "${data.cat_4_visible}",
+            "data-source": "${data.cat_4_items}"
+          },
+          {
+            "type": "CheckboxGroup",
+            "name": "cat_5_products",
+            "label": "${data.cat_5_name}",
+            "required": false,
+            "visible": "${data.cat_5_visible}",
+            "data-source": "${data.cat_5_items}"
+          },
+          {
+            "type": "CheckboxGroup",
+            "name": "cat_6_products",
+            "label": "${data.cat_6_name}",
+            "required": false,
+            "visible": "${data.cat_6_visible}",
+            "data-source": "${data.cat_6_items}"
+          },
+          {
+            "type": "CheckboxGroup",
+            "name": "cat_7_products",
+            "label": "${data.cat_7_name}",
+            "required": false,
+            "visible": "${data.cat_7_visible}",
+            "data-source": "${data.cat_7_items}"
+          },
+          {
+            "type": "CheckboxGroup",
+            "name": "cat_8_products",
+            "label": "${data.cat_8_name}",
+            "required": false,
+            "visible": "${data.cat_8_visible}",
+            "data-source": "${data.cat_8_items}"
           },
           {
             "type": "Footer",
@@ -75,7 +352,14 @@
             "on-click-action": {
               "name": "data_exchange",
               "payload": {
-                "selected_products": "${form.selected_products}"
+                "selected_1": "${form.cat_1_products}",
+                "selected_2": "${form.cat_2_products}",
+                "selected_3": "${form.cat_3_products}",
+                "selected_4": "${form.cat_4_products}",
+                "selected_5": "${form.cat_5_products}",
+                "selected_6": "${form.cat_6_products}",
+                "selected_7": "${form.cat_7_products}",
+                "selected_8": "${form.cat_8_products}"
               }
             }
           }
@@ -88,11 +372,11 @@
       "data": {
         "slot_1_id": {
           "type": "string",
-          "__example__": "1"
+          "__example__": "88"
         },
         "slot_1_title": {
           "type": "string",
-          "__example__": "X-Burger"
+          "__example__": "Almoço Maki 18 pc"
         },
         "slot_1_visible": {
           "type": "boolean",
@@ -179,6 +463,54 @@
           "__example__": ""
         },
         "slot_8_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_9_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_9_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_9_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_10_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_10_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_10_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_11_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_11_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_11_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_12_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_12_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_12_visible": {
           "type": "boolean",
           "__example__": false
         }
@@ -587,6 +919,202 @@
             ]
           },
           {
+            "type": "Dropdown",
+            "name": "qty_9",
+            "label": "${data.slot_9_title}",
+            "required": false,
+            "visible": "${data.slot_9_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_10",
+            "label": "${data.slot_10_title}",
+            "required": false,
+            "visible": "${data.slot_10_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_11",
+            "label": "${data.slot_11_title}",
+            "required": false,
+            "visible": "${data.slot_11_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_12",
+            "label": "${data.slot_12_title}",
+            "required": false,
+            "visible": "${data.slot_12_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
             "type": "Footer",
             "label": "Continuar",
             "on-click-action": {
@@ -607,7 +1135,15 @@
                 "q7": "${form.qty_7}",
                 "id7": "${data.slot_7_id}",
                 "q8": "${form.qty_8}",
-                "id8": "${data.slot_8_id}"
+                "id8": "${data.slot_8_id}",
+                "q9": "${form.qty_9}",
+                "id9": "${data.slot_9_id}",
+                "q10": "${form.qty_10}",
+                "id10": "${data.slot_10_id}",
+                "q11": "${form.qty_11}",
+                "id11": "${data.slot_11_id}",
+                "q12": "${form.qty_12}",
+                "id12": "${data.slot_12_id}"
               }
             }
           }

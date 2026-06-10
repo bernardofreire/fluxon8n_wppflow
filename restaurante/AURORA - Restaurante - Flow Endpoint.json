@@ -89,7 +89,7 @@
       ],
       "id": "n002-0000-4000-8000-000000000000",
       "name": "Config Local",
-      "notes": "Chave privada RSA + credenciais Odoo (auth url, database, api-key/secret, base url, company/pos ids)."
+      "notes": "Chave privada RSA + credenciais Odoo."
     },
     {
       "parameters": {
@@ -103,7 +103,7 @@
       ],
       "id": "n003-0000-4000-8000-000000000000",
       "name": "Decryption",
-      "notes": "RSA-OAEP + AES-128-GCM. Gera route p/ o Switch."
+      "notes": "RSA-OAEP + AES-128-GCM. Gera route."
     },
     {
       "parameters": {
@@ -136,7 +136,7 @@
       ],
       "id": "n004-0000-4000-8000-000000000000",
       "name": "É ping?",
-      "notes": "Health check da Meta sai por aqui SEM tocar no Odoo (nao pode depender do ERP)."
+      "notes": "ping nao toca no Odoo."
     },
     {
       "parameters": {
@@ -150,7 +150,7 @@
       ],
       "id": "n005-0000-4000-8000-000000000000",
       "name": "Resp Ping",
-      "notes": "Responde { status: active } ao health check."
+      "notes": ""
     },
     {
       "parameters": {
@@ -183,7 +183,7 @@
       ],
       "id": "n006-0000-4000-8000-000000000000",
       "name": "Odoo Auth",
-      "notes": "POST /lym-auth/auth/token -> retorna o token usado como Bearer. Confira o nome do campo do token (access_token?)."
+      "notes": "POST /lym-auth/auth/token -> token (Bearer). Confira o campo (access_token?)."
     },
     {
       "parameters": {
@@ -322,8 +322,7 @@
         120
       ],
       "id": "n007-0000-4000-8000-000000000000",
-      "name": "Rotear por Tela",
-      "notes": "route lido de Decryption (apos o Odoo Auth). Fallback = BACK/outros."
+      "name": "Rotear por Tela"
     },
     {
       "parameters": {
@@ -338,7 +337,7 @@
             },
             {
               "name": "limit",
-              "value": "100"
+              "value": "300"
             }
           ]
         },
@@ -361,11 +360,11 @@
       ],
       "id": "n008-0000-4000-8000-000000000000",
       "name": "Odoo Produtos (INIT)",
-      "notes": "GET catalogo da empresa"
+      "notes": "GET catalogo"
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all().map((i) => i.json);\nconst products = (items.length === 1 && Array.isArray(items[0])) ? items[0] : items;\nconst brl = (v) => 'R$ ' + Number(v || 0).toFixed(2).replace('.', ',');\nconst data = { products: products.slice(0, 20).map((p) => ({ id: String(p.id), title: String(p.name || '').slice(0, 30), description: brl(p.list_price) })) };\nreturn [{ json: { response_to_send: { screen: 'PRODUCTS', data } } }];"
+        "jsCode": "const items = $input.all().map((i) => i.json);\nconst products = (items.length === 1 && Array.isArray(items[0])) ? items[0] : items;\nconst brl = (v) => 'R$ ' + Number(v || 0).toFixed(2).replace('.', ',');\nconst groups = {}; const order = [];\nproducts.forEach((p) => { const cat = (p.categ_id && p.categ_id.name) || 'Outros'; if (!groups[cat]) { groups[cat] = []; order.push(cat); } groups[cat].push(p); });\nconst data = {};\norder.slice(0, 8).forEach((cat, i) => {\n  const n = i + 1;\n  data['cat_' + n + '_name'] = String(cat).slice(0, 30);\n  data['cat_' + n + '_visible'] = true;\n  data['cat_' + n + '_items'] = groups[cat].slice(0, 20).map((p) => ({ id: String(p.id), title: String(p.name || '').slice(0, 30), description: brl(p.list_price) }));\n});\nfor (let n = 1; n <= 8; n++) {\n  if (!data['cat_' + n + '_visible']) { data['cat_' + n + '_name'] = ''; data['cat_' + n + '_visible'] = false; data['cat_' + n + '_items'] = [{ id: '_', title: '-' }]; }\n}\nreturn [{ json: { response_to_send: { screen: 'PRODUCTS', data } } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -375,7 +374,7 @@
       ],
       "id": "n009-0000-4000-8000-000000000000",
       "name": "Monta PRODUCTS",
-      "notes": ""
+      "notes": "agrupa por categoria"
     },
     {
       "parameters": {
@@ -390,7 +389,7 @@
             },
             {
               "name": "limit",
-              "value": "200"
+              "value": "300"
             }
           ]
         },
@@ -413,11 +412,11 @@
       ],
       "id": "n010-0000-4000-8000-000000000000",
       "name": "Odoo Produtos (slots)",
-      "notes": "GET catalogo p/ nomes dos selecionados"
+      "notes": ""
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all().map((i) => i.json);\nconst products = (items.length === 1 && Array.isArray(items[0])) ? items[0] : items;\nconst byId = {};\nproducts.forEach((p) => { byId[String(p.id)] = p; });\nconst selected = (($('Decryption').first().json.decryptedBody.data) || {}).selected_products || [];\nconst out = {};\nselected.slice(0, 8).forEach((pid, i) => {\n  const n = i + 1; const p = byId[String(pid)] || {};\n  out['slot_' + n + '_id'] = String(pid);\n  out['slot_' + n + '_title'] = String(p.name || ('Produto ' + pid)).slice(0, 20);\n  out['slot_' + n + '_visible'] = true;\n});\nfor (let n = 1; n <= 8; n++) {\n  if (!out['slot_' + n + '_visible']) { out['slot_' + n + '_id'] = ''; out['slot_' + n + '_title'] = ''; out['slot_' + n + '_visible'] = false; }\n}\nreturn [{ json: { response_to_send: { screen: 'QUANTITIES', data: out } } }];"
+        "jsCode": "const items = $input.all().map((i) => i.json);\nconst products = (items.length === 1 && Array.isArray(items[0])) ? items[0] : items;\nconst byId = {};\nproducts.forEach((p) => { byId[String(p.id)] = p; });\nconst d = ($('Decryption').first().json.decryptedBody.data) || {};\nlet selected = [];\nfor (let c = 1; c <= 8; c++) { const arr = d['selected_' + c]; if (Array.isArray(arr)) selected = selected.concat(arr); }\nselected = selected.filter((x) => x && x !== '_');\nconst out = {};\nselected.slice(0, 12).forEach((pid, i) => {\n  const n = i + 1; const p = byId[String(pid)] || {};\n  out['slot_' + n + '_id'] = String(pid);\n  out['slot_' + n + '_title'] = String(p.name || ('Produto ' + pid)).slice(0, 20);\n  out['slot_' + n + '_visible'] = true;\n});\nfor (let n = 1; n <= 12; n++) {\n  if (!out['slot_' + n + '_visible']) { out['slot_' + n + '_id'] = ''; out['slot_' + n + '_title'] = ''; out['slot_' + n + '_visible'] = false; }\n}\nreturn [{ json: { response_to_send: { screen: 'QUANTITIES', data: out } } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -427,11 +426,11 @@
       ],
       "id": "n011-0000-4000-8000-000000000000",
       "name": "Monta QUANTITIES",
-      "notes": ""
+      "notes": "junta selecionados de todas as categorias"
     },
     {
       "parameters": {
-        "jsCode": "const data = ($('Decryption').first().json.decryptedBody.data) || {};\nconst cart = [];\nfor (let n = 1; n <= 8; n++) {\n  const id = data['id' + n]; const q = parseInt(data['q' + n], 10);\n  if (id && q > 0) cart.push({ product_id: Number(id), quantity: q });\n}\nreturn [{ json: { response_to_send: { screen: 'DELIVERY', data: { cart: JSON.stringify(cart) } } } }];"
+        "jsCode": "const data = ($('Decryption').first().json.decryptedBody.data) || {};\nconst cart = [];\nfor (let n = 1; n <= 12; n++) {\n  const id = data['id' + n]; const q = parseInt(data['q' + n], 10);\n  if (id && q > 0) cart.push({ product_id: Number(id), quantity: q });\n}\nreturn [{ json: { response_to_send: { screen: 'DELIVERY', data: { cart: JSON.stringify(cart) } } } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -483,7 +482,7 @@
       ],
       "id": "n014-0000-4000-8000-000000000000",
       "name": "Odoo Quote",
-      "notes": "POST /orders/quote"
+      "notes": ""
     },
     {
       "parameters": {
@@ -539,7 +538,7 @@
       ],
       "id": "n017-0000-4000-8000-000000000000",
       "name": "Odoo Cria Pedido",
-      "notes": "POST /orders (draft)"
+      "notes": ""
     },
     {
       "parameters": {
@@ -581,7 +580,7 @@
       ],
       "id": "n020-0000-4000-8000-000000000000",
       "name": "Encryption",
-      "notes": "Recriptografa (IV invertido). Saida base64."
+      "notes": "Recriptografa (IV invertido)."
     },
     {
       "parameters": {
