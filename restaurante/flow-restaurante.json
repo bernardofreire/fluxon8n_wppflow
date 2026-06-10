@@ -1,0 +1,796 @@
+{
+  "version": "7.0",
+  "data_api_version": "3.0",
+  "routing_model": {
+    "PRODUCTS": [
+      "QUANTITIES"
+    ],
+    "QUANTITIES": [
+      "DELIVERY"
+    ],
+    "DELIVERY": [
+      "SUMMARY"
+    ],
+    "SUMMARY": [
+      "SUCCESS"
+    ],
+    "SUCCESS": []
+  },
+  "screens": [
+    {
+      "id": "PRODUCTS",
+      "title": "Cardápio",
+      "data": {
+        "products": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
+            {
+              "id": "1",
+              "title": "X-Burger",
+              "description": "R$ 25,00"
+            },
+            {
+              "id": "2",
+              "title": "Coca-Cola Lata",
+              "description": "R$ 7,00"
+            }
+          ]
+        }
+      },
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "TextHeading",
+            "text": "Monte seu pedido"
+          },
+          {
+            "type": "TextBody",
+            "text": "Selecione os itens que deseja."
+          },
+          {
+            "type": "CheckboxGroup",
+            "name": "selected_products",
+            "label": "Itens do cardápio",
+            "required": true,
+            "data-source": "${data.products}"
+          },
+          {
+            "type": "Footer",
+            "label": "Continuar",
+            "on-click-action": {
+              "name": "data_exchange",
+              "payload": {
+                "selected_products": "${form.selected_products}"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "QUANTITIES",
+      "title": "Quantidades",
+      "data": {
+        "slot_1_id": {
+          "type": "string",
+          "__example__": "1"
+        },
+        "slot_1_title": {
+          "type": "string",
+          "__example__": "X-Burger"
+        },
+        "slot_1_visible": {
+          "type": "boolean",
+          "__example__": true
+        },
+        "slot_2_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_2_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_2_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_3_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_3_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_3_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_4_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_4_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_4_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_5_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_5_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_5_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_6_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_6_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_6_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_7_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_7_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_7_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_8_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_8_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_8_visible": {
+          "type": "boolean",
+          "__example__": false
+        }
+      },
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "TextHeading",
+            "text": "Quantidades"
+          },
+          {
+            "type": "TextBody",
+            "text": "Defina quantos de cada item você quer."
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_1",
+            "label": "${data.slot_1_title}",
+            "required": false,
+            "visible": "${data.slot_1_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_2",
+            "label": "${data.slot_2_title}",
+            "required": false,
+            "visible": "${data.slot_2_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_3",
+            "label": "${data.slot_3_title}",
+            "required": false,
+            "visible": "${data.slot_3_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_4",
+            "label": "${data.slot_4_title}",
+            "required": false,
+            "visible": "${data.slot_4_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_5",
+            "label": "${data.slot_5_title}",
+            "required": false,
+            "visible": "${data.slot_5_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_6",
+            "label": "${data.slot_6_title}",
+            "required": false,
+            "visible": "${data.slot_6_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_7",
+            "label": "${data.slot_7_title}",
+            "required": false,
+            "visible": "${data.slot_7_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_8",
+            "label": "${data.slot_8_title}",
+            "required": false,
+            "visible": "${data.slot_8_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "Footer",
+            "label": "Continuar",
+            "on-click-action": {
+              "name": "data_exchange",
+              "payload": {
+                "q1": "${form.qty_1}",
+                "id1": "${data.slot_1_id}",
+                "q2": "${form.qty_2}",
+                "id2": "${data.slot_2_id}",
+                "q3": "${form.qty_3}",
+                "id3": "${data.slot_3_id}",
+                "q4": "${form.qty_4}",
+                "id4": "${data.slot_4_id}",
+                "q5": "${form.qty_5}",
+                "id5": "${data.slot_5_id}",
+                "q6": "${form.qty_6}",
+                "id6": "${data.slot_6_id}",
+                "q7": "${form.qty_7}",
+                "id7": "${data.slot_7_id}",
+                "q8": "${form.qty_8}",
+                "id8": "${data.slot_8_id}"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "DELIVERY",
+      "title": "Entrega",
+      "data": {
+        "cart": {
+          "type": "string",
+          "__example__": "[]"
+        }
+      },
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "TextHeading",
+            "text": "Dados de entrega"
+          },
+          {
+            "type": "TextInput",
+            "name": "customer_name",
+            "label": "Nome",
+            "input-type": "text",
+            "required": true
+          },
+          {
+            "type": "TextInput",
+            "name": "phone",
+            "label": "Telefone",
+            "input-type": "phone",
+            "required": true
+          },
+          {
+            "type": "TextInput",
+            "name": "street",
+            "label": "Rua",
+            "input-type": "text",
+            "required": true
+          },
+          {
+            "type": "TextInput",
+            "name": "number",
+            "label": "Número",
+            "input-type": "text",
+            "required": true
+          },
+          {
+            "type": "TextInput",
+            "name": "neighborhood",
+            "label": "Bairro",
+            "input-type": "text",
+            "required": false
+          },
+          {
+            "type": "TextArea",
+            "name": "complement",
+            "label": "Complemento / observações",
+            "required": false
+          },
+          {
+            "type": "Footer",
+            "label": "Revisar pedido",
+            "on-click-action": {
+              "name": "data_exchange",
+              "payload": {
+                "cart": "${data.cart}",
+                "customer_name": "${form.customer_name}",
+                "phone": "${form.phone}",
+                "street": "${form.street}",
+                "number": "${form.number}",
+                "neighborhood": "${form.neighborhood}",
+                "complement": "${form.complement}"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "SUMMARY",
+      "title": "Resumo",
+      "data": {
+        "items_text": {
+          "type": "string",
+          "__example__": "2x X-Burger - R$ 25,00 = R$ 50,00\n1x Coca-Cola Lata - R$ 7,00 = R$ 7,00"
+        },
+        "subtotal_text": {
+          "type": "string",
+          "__example__": "Subtotal: R$ 57,00"
+        },
+        "delivery_fee_text": {
+          "type": "string",
+          "__example__": "Frete: R$ 0,00"
+        },
+        "total_text": {
+          "type": "string",
+          "__example__": "Total: R$ 57,00"
+        },
+        "delivery_text": {
+          "type": "string",
+          "__example__": "Entrega: João, Rua A, 100 - Centro"
+        },
+        "order_payload": {
+          "type": "string",
+          "__example__": "{}"
+        }
+      },
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "TextHeading",
+            "text": "Confira seu pedido"
+          },
+          {
+            "type": "TextBody",
+            "text": "${data.items_text}"
+          },
+          {
+            "type": "TextCaption",
+            "text": "${data.subtotal_text}"
+          },
+          {
+            "type": "TextCaption",
+            "text": "${data.delivery_fee_text}"
+          },
+          {
+            "type": "TextSubheading",
+            "text": "${data.total_text}"
+          },
+          {
+            "type": "TextCaption",
+            "text": "${data.delivery_text}"
+          },
+          {
+            "type": "Footer",
+            "label": "Confirmar pedido",
+            "on-click-action": {
+              "name": "data_exchange",
+              "payload": {
+                "order_payload": "${data.order_payload}"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "SUCCESS",
+      "title": "Pronto!",
+      "terminal": true,
+      "success": true,
+      "data": {
+        "confirmation": {
+          "type": "string",
+          "__example__": "Pedido AURORA/0001 criado!"
+        }
+      },
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "TextHeading",
+            "text": "Pedido enviado ✅"
+          },
+          {
+            "type": "TextBody",
+            "text": "${data.confirmation}"
+          },
+          {
+            "type": "Footer",
+            "label": "Fechar",
+            "on-click-action": {
+              "name": "complete",
+              "payload": {}
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

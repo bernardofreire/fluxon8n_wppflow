@@ -1,0 +1,874 @@
+{
+  "name": "AURORA - Restaurante - Flow Endpoint",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "flow-endpoint-restaurante",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -980,
+        0
+      ],
+      "id": "n001-0000-4000-8000-000000000000",
+      "name": "Flow Endpoint Webhook",
+      "webhookId": "flow-endpoint-restaurante",
+      "notes": "URL: https://<n8n>/webhook/flow-endpoint-restaurante"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1",
+              "name": "FLOW_PRIVATE_KEY",
+              "value": "-----BEGIN PRIVATE KEY-----\nCOLE_AQUI_SUA_CHAVE_PRIVADA_PEM\n-----END PRIVATE KEY-----",
+              "type": "string"
+            },
+            {
+              "id": "c2",
+              "name": "FLOW_PRIVATE_KEY_PASSPHRASE",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "c3",
+              "name": "ODOO_BASE_URL",
+              "value": "https://ocm19.lymtech.com.br",
+              "type": "string"
+            },
+            {
+              "id": "c4",
+              "name": "ODOO_AUTH_URL",
+              "value": "https://ocm19.lymtech.com.br/lym-auth/auth/token",
+              "type": "string"
+            },
+            {
+              "id": "c5",
+              "name": "ODOO_DATABASE",
+              "value": "pvd01",
+              "type": "string"
+            },
+            {
+              "id": "c6",
+              "name": "ODOO_API_KEY",
+              "value": "COLE_API_KEY",
+              "type": "string"
+            },
+            {
+              "id": "c7",
+              "name": "ODOO_API_SECRET",
+              "value": "COLE_API_SECRET",
+              "type": "string"
+            },
+            {
+              "id": "c8",
+              "name": "ODOO_COMPANY_ID",
+              "value": "1",
+              "type": "string"
+            },
+            {
+              "id": "c9",
+              "name": "ODOO_POS_CONFIG_ID",
+              "value": "1",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -780,
+        0
+      ],
+      "id": "n002-0000-4000-8000-000000000000",
+      "name": "Config Local",
+      "notes": "Chave privada RSA + credenciais Odoo (auth url, database, api-key/secret, base url, company/pos ids)."
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require(\"crypto\");\n\nconst PRIVATE_KEY = String($('Config Local').first().json.FLOW_PRIVATE_KEY)\n  .replace(/\\\\n/g, \"\\n\")\n  .trim();\nif (!PRIVATE_KEY || PRIVATE_KEY.includes(\"COLE_AQUI\")) {\n  throw new Error('Cole a chave privada RSA (PEM) no no \"Config Local\"');\n}\n\nconst wh = $('Flow Endpoint Webhook').first().json;\nconst body = wh.body || wh;\nconst { encrypted_aes_key, encrypted_flow_data, initial_vector } = body;\nif (!encrypted_aes_key || !encrypted_flow_data || !initial_vector) {\n  throw new Error(\"Request nao e um WhatsApp Flow (campos encrypted_* ausentes)\");\n}\n\nconst aesKeyBuffer = crypto.privateDecrypt(\n  { key: crypto.createPrivateKey(PRIVATE_KEY), padding: crypto.constants.RSA_PKCS1_OAEP_PADDING, oaepHash: \"sha256\" },\n  Buffer.from(encrypted_aes_key, \"base64\"),\n);\n\nconst flowDataBuffer = Buffer.from(encrypted_flow_data, \"base64\");\nconst ivBuffer = Buffer.from(initial_vector, \"base64\");\nconst TAG_LENGTH = 16;\nconst encryptedBody = flowDataBuffer.subarray(0, -TAG_LENGTH);\nconst authTag = flowDataBuffer.subarray(-TAG_LENGTH);\n\nconst decipher = crypto.createDecipheriv(\"aes-128-gcm\", aesKeyBuffer, ivBuffer);\ndecipher.setAuthTag(authTag);\nconst decryptedBody = JSON.parse(\n  Buffer.concat([decipher.update(encryptedBody), decipher.final()]).toString(\"utf-8\"),\n);\n\nconst route = decryptedBody.action === 'data_exchange' ? (decryptedBody.screen || '') : decryptedBody.action;\n\nreturn [{ json: { decryptedBody, aesKeyBuffer, ivBuffer, action: decryptedBody.action, screen: decryptedBody.screen || null, route } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -580,
+        0
+      ],
+      "id": "n003-0000-4000-8000-000000000000",
+      "name": "Decryption",
+      "notes": "RSA-OAEP + AES-128-GCM. Gera route p/ o Switch."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "isping",
+              "leftValue": "={{ $('Decryption').first().json.route }}",
+              "rightValue": "ping",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -380,
+        0
+      ],
+      "id": "n004-0000-4000-8000-000000000000",
+      "name": "É ping?",
+      "notes": "Health check da Meta sai por aqui SEM tocar no Odoo (nao pode depender do ERP)."
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { response_to_send: { data: { status: 'active' } } } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        -200
+      ],
+      "id": "n005-0000-4000-8000-000000000000",
+      "name": "Resp Ping",
+      "notes": "Responde { status: active } ao health check."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config Local').first().json.ODOO_AUTH_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Odoo-Database",
+              "value": "={{ $('Config Local').first().json.ODOO_DATABASE }}"
+            },
+            {
+              "name": "api-key",
+              "value": "={{ $('Config Local').first().json.ODOO_API_KEY }}"
+            },
+            {
+              "name": "api-secret",
+              "value": "={{ $('Config Local').first().json.ODOO_API_SECRET }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -160,
+        120
+      ],
+      "id": "n006-0000-4000-8000-000000000000",
+      "name": "Odoo Auth",
+      "notes": "POST /lym-auth/auth/token -> retorna o token usado como Bearer. Confira o nome do campo do token (access_token?)."
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "r-INIT",
+                    "leftValue": "={{ $('Decryption').first().json.route }}",
+                    "rightValue": "INIT",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "INIT"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "r-PRODUCTS",
+                    "leftValue": "={{ $('Decryption').first().json.route }}",
+                    "rightValue": "PRODUCTS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "PRODUCTS"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "r-QUANTITIES",
+                    "leftValue": "={{ $('Decryption').first().json.route }}",
+                    "rightValue": "QUANTITIES",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "QUANTITIES"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "r-DELIVERY",
+                    "leftValue": "={{ $('Decryption').first().json.route }}",
+                    "rightValue": "DELIVERY",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "DELIVERY"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "r-SUMMARY",
+                    "leftValue": "={{ $('Decryption').first().json.route }}",
+                    "rightValue": "SUMMARY",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "SUMMARY"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        60,
+        120
+      ],
+      "id": "n007-0000-4000-8000-000000000000",
+      "name": "Rotear por Tela",
+      "notes": "route lido de Decryption (apos o Odoo Auth). Fallback = BACK/outros."
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $('Config Local').first().json.ODOO_BASE_URL }}/lym/pos/pointofsales/companies/{{ $('Config Local').first().json.ODOO_COMPANY_ID }}/products",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "available_in_pos",
+              "value": "true"
+            },
+            {
+              "name": "limit",
+              "value": "100"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + ($('Odoo Auth').first().json.access_token || $('Odoo Auth').first().json.token) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        300,
+        -120
+      ],
+      "id": "n008-0000-4000-8000-000000000000",
+      "name": "Odoo Produtos (INIT)",
+      "notes": "GET catalogo da empresa"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all().map((i) => i.json);\nconst products = (items.length === 1 && Array.isArray(items[0])) ? items[0] : items;\nconst brl = (v) => 'R$ ' + Number(v || 0).toFixed(2).replace('.', ',');\nconst data = { products: products.slice(0, 20).map((p) => ({ id: String(p.id), title: String(p.name || '').slice(0, 30), description: brl(p.list_price) })) };\nreturn [{ json: { response_to_send: { screen: 'PRODUCTS', data } } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        540,
+        -120
+      ],
+      "id": "n009-0000-4000-8000-000000000000",
+      "name": "Monta PRODUCTS",
+      "notes": ""
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $('Config Local').first().json.ODOO_BASE_URL }}/lym/pos/pointofsales/companies/{{ $('Config Local').first().json.ODOO_COMPANY_ID }}/products",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "available_in_pos",
+              "value": "true"
+            },
+            {
+              "name": "limit",
+              "value": "200"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + ($('Odoo Auth').first().json.access_token || $('Odoo Auth').first().json.token) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        300,
+        20
+      ],
+      "id": "n010-0000-4000-8000-000000000000",
+      "name": "Odoo Produtos (slots)",
+      "notes": "GET catalogo p/ nomes dos selecionados"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all().map((i) => i.json);\nconst products = (items.length === 1 && Array.isArray(items[0])) ? items[0] : items;\nconst byId = {};\nproducts.forEach((p) => { byId[String(p.id)] = p; });\nconst selected = (($('Decryption').first().json.decryptedBody.data) || {}).selected_products || [];\nconst out = {};\nselected.slice(0, 8).forEach((pid, i) => {\n  const n = i + 1; const p = byId[String(pid)] || {};\n  out['slot_' + n + '_id'] = String(pid);\n  out['slot_' + n + '_title'] = String(p.name || ('Produto ' + pid)).slice(0, 20);\n  out['slot_' + n + '_visible'] = true;\n});\nfor (let n = 1; n <= 8; n++) {\n  if (!out['slot_' + n + '_visible']) { out['slot_' + n + '_id'] = ''; out['slot_' + n + '_title'] = ''; out['slot_' + n + '_visible'] = false; }\n}\nreturn [{ json: { response_to_send: { screen: 'QUANTITIES', data: out } } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        540,
+        20
+      ],
+      "id": "n011-0000-4000-8000-000000000000",
+      "name": "Monta QUANTITIES",
+      "notes": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = ($('Decryption').first().json.decryptedBody.data) || {};\nconst cart = [];\nfor (let n = 1; n <= 8; n++) {\n  const id = data['id' + n]; const q = parseInt(data['q' + n], 10);\n  if (id && q > 0) cart.push({ product_id: Number(id), quantity: q });\n}\nreturn [{ json: { response_to_send: { screen: 'DELIVERY', data: { cart: JSON.stringify(cart) } } } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        300,
+        160
+      ],
+      "id": "n012-0000-4000-8000-000000000000",
+      "name": "Monta DELIVERY",
+      "notes": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = ($('Decryption').first().json.decryptedBody.data) || {};\nconst cart = JSON.parse(data.cart || '[]');\nconst POS = Number($('Config Local').first().json.ODOO_POS_CONFIG_ID);\nconst quoteBody = { pos_config_id: POS, lines: cart.map((c) => ({ product_id: c.product_id, quantity: c.quantity })) };\nconst orderPayload = {\n  pos_config_id: POS,\n  order_type: 'delivery',\n  customer: { name: data.customer_name, phone: data.phone },\n  delivery_address: {\n    new: { street: (data.street || '') + (data.number ? ', ' + data.number : ''), street2: data.complement || null, city: data.neighborhood || null },\n    add_new_address: true,\n  },\n  lines: cart.map((c) => ({ product_id: c.product_id, quantity: c.quantity })),\n  source: 'whatsapp_flow',\n};\nreturn [{ json: { quoteBody, orderPayload } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        300,
+        300
+      ],
+      "id": "n013-0000-4000-8000-000000000000",
+      "name": "Prep Quote",
+      "notes": ""
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config Local').first().json.ODOO_BASE_URL }}/lym/pos/pointofsales/orders/quote",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + ($('Odoo Auth').first().json.access_token || $('Odoo Auth').first().json.token) }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.quoteBody }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        540,
+        300
+      ],
+      "id": "n014-0000-4000-8000-000000000000",
+      "name": "Odoo Quote",
+      "notes": "POST /orders/quote"
+    },
+    {
+      "parameters": {
+        "jsCode": "const quote = $input.first().json;\nconst prep = $('Prep Quote').first().json;\nconst data = ($('Decryption').first().json.decryptedBody.data) || {};\nconst brl = (v) => 'R$ ' + Number(v || 0).toFixed(2).replace('.', ',');\nconst NL = String.fromCharCode(10);\nconst items_text = (quote.lines || []).map((l) => { const name = (l.product_id && l.product_id.name) || 'item'; return l.quantity + 'x ' + name + ' - ' + brl(l.unit_price) + ' = ' + brl(l.subtotal_taxed); }).join(NL);\nconst FRETE = 0;\nconst subtotal = Number(quote.amount_total || 0);\nconst subtotal_text = 'Subtotal: ' + brl(subtotal);\nconst delivery_fee_text = 'Frete: ' + brl(FRETE);\nconst total_text = 'Total: ' + brl(subtotal + FRETE);\nconst delivery_text = 'Entrega: ' + [data.customer_name, [data.street, data.number].filter(Boolean).join(', '), data.neighborhood].filter(Boolean).join(' - ');\nreturn [{ json: { response_to_send: { screen: 'SUMMARY', data: { items_text: items_text || '(itens)', subtotal_text, delivery_fee_text, total_text, delivery_text, order_payload: JSON.stringify(prep.orderPayload) } } } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        780,
+        300
+      ],
+      "id": "n015-0000-4000-8000-000000000000",
+      "name": "Monta SUMMARY",
+      "notes": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = ($('Decryption').first().json.decryptedBody.data) || {};\nconst orderPayload = JSON.parse(data.order_payload || '{}');\nreturn [{ json: { orderPayload } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        300,
+        480
+      ],
+      "id": "n016-0000-4000-8000-000000000000",
+      "name": "Prep Order",
+      "notes": ""
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config Local').first().json.ODOO_BASE_URL }}/lym/pos/pointofsales/orders",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + ($('Odoo Auth').first().json.access_token || $('Odoo Auth').first().json.token) }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.orderPayload }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        540,
+        480
+      ],
+      "id": "n017-0000-4000-8000-000000000000",
+      "name": "Odoo Cria Pedido",
+      "notes": "POST /orders (draft)"
+    },
+    {
+      "parameters": {
+        "jsCode": "const order = $input.first().json;\nconst brl = (v) => 'R$ ' + Number(v || 0).toFixed(2).replace('.', ',');\nreturn [{ json: { response_to_send: { screen: 'SUCCESS', data: { confirmation: 'Pedido ' + (order.name || order.id) + ' criado! Total ' + brl(order.amount_total) } } } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        780,
+        480
+      ],
+      "id": "n018-0000-4000-8000-000000000000",
+      "name": "Monta SUCCESS",
+      "notes": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "const d = $('Decryption').first().json;\nlet response_to_send;\nif (d.action === 'BACK') { response_to_send = { screen: d.screen || 'PRODUCTS', data: {} }; }\nelse { response_to_send = { data: { acknowledged: true } }; }\nreturn [{ json: { response_to_send } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        300,
+        640
+      ],
+      "id": "n019-0000-4000-8000-000000000000",
+      "name": "Resp Default",
+      "notes": ""
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require(\"crypto\");\n\nconst responsePayload = $input.first().json.response_to_send;\n\nconst aesKeyBuffer = Buffer.from($('Decryption').first().json.aesKeyBuffer.data);\nconst ivBuffer = Buffer.from($('Decryption').first().json.ivBuffer.data);\nconst flippedIV = Buffer.from(ivBuffer.map((b) => ~b));\n\nconst cipher = crypto.createCipheriv(\"aes-128-gcm\", aesKeyBuffer, flippedIV);\nconst encryptedResponse = Buffer.concat([\n  cipher.update(JSON.stringify(responsePayload), \"utf-8\"),\n  cipher.final(),\n  cipher.getAuthTag(),\n]);\n\nreturn [{ json: { response: encryptedResponse.toString(\"base64\") } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "n020-0000-4000-8000-000000000000",
+      "name": "Encryption",
+      "notes": "Recriptografa (IV invertido). Saida base64."
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.response }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1240,
+        0
+      ],
+      "id": "n021-0000-4000-8000-000000000000",
+      "name": "Respond Encrypted"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Flow Endpoint Webhook": {
+      "main": [
+        [
+          {
+            "node": "Config Local",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config Local": {
+      "main": [
+        [
+          {
+            "node": "Decryption",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decryption": {
+      "main": [
+        [
+          {
+            "node": "É ping?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "É ping?": {
+      "main": [
+        [
+          {
+            "node": "Resp Ping",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Odoo Auth",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Odoo Auth": {
+      "main": [
+        [
+          {
+            "node": "Rotear por Tela",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rotear por Tela": {
+      "main": [
+        [
+          {
+            "node": "Odoo Produtos (INIT)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Odoo Produtos (slots)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Monta DELIVERY",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prep Quote",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prep Order",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Resp Default",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Odoo Produtos (INIT)": {
+      "main": [
+        [
+          {
+            "node": "Monta PRODUCTS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monta PRODUCTS": {
+      "main": [
+        [
+          {
+            "node": "Encryption",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Odoo Produtos (slots)": {
+      "main": [
+        [
+          {
+            "node": "Monta QUANTITIES",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monta QUANTITIES": {
+      "main": [
+        [
+          {
+            "node": "Encryption",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monta DELIVERY": {
+      "main": [
+        [
+          {
+            "node": "Encryption",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prep Quote": {
+      "main": [
+        [
+          {
+            "node": "Odoo Quote",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Odoo Quote": {
+      "main": [
+        [
+          {
+            "node": "Monta SUMMARY",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monta SUMMARY": {
+      "main": [
+        [
+          {
+            "node": "Encryption",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prep Order": {
+      "main": [
+        [
+          {
+            "node": "Odoo Cria Pedido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Odoo Cria Pedido": {
+      "main": [
+        [
+          {
+            "node": "Monta SUCCESS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monta SUCCESS": {
+      "main": [
+        [
+          {
+            "node": "Encryption",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resp Default": {
+      "main": [
+        [
+          {
+            "node": "Encryption",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resp Ping": {
+      "main": [
+        [
+          {
+            "node": "Encryption",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Encryption": {
+      "main": [
+        [
+          {
+            "node": "Respond Encrypted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}
