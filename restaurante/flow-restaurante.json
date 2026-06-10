@@ -21,6 +21,14 @@
       "id": "PRODUCTS",
       "title": "Cardápio",
       "data": {
+        "has_notice": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "notice": {
+          "type": "string",
+          "__example__": ""
+        },
         "cat_1_name": {
           "type": "string",
           "__example__": "Food"
@@ -269,6 +277,130 @@
               "title": "-"
             }
           ]
+        },
+        "cat_9_name": {
+          "type": "string",
+          "__example__": ""
+        },
+        "cat_9_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "cat_9_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
+            {
+              "id": "_",
+              "title": "-"
+            }
+          ]
+        },
+        "cat_10_name": {
+          "type": "string",
+          "__example__": ""
+        },
+        "cat_10_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "cat_10_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
+            {
+              "id": "_",
+              "title": "-"
+            }
+          ]
+        },
+        "cat_11_name": {
+          "type": "string",
+          "__example__": ""
+        },
+        "cat_11_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "cat_11_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
+            {
+              "id": "_",
+              "title": "-"
+            }
+          ]
+        },
+        "cat_12_name": {
+          "type": "string",
+          "__example__": ""
+        },
+        "cat_12_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "cat_12_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
+            {
+              "id": "_",
+              "title": "-"
+            }
+          ]
         }
       },
       "layout": {
@@ -281,6 +413,11 @@
           {
             "type": "TextBody",
             "text": "Selecione os itens de cada categoria."
+          },
+          {
+            "type": "TextCaption",
+            "text": "${data.notice}",
+            "visible": "${data.has_notice}"
           },
           {
             "type": "CheckboxGroup",
@@ -347,6 +484,38 @@
             "data-source": "${data.cat_8_items}"
           },
           {
+            "type": "CheckboxGroup",
+            "name": "cat_9_products",
+            "label": "${data.cat_9_name}",
+            "required": false,
+            "visible": "${data.cat_9_visible}",
+            "data-source": "${data.cat_9_items}"
+          },
+          {
+            "type": "CheckboxGroup",
+            "name": "cat_10_products",
+            "label": "${data.cat_10_name}",
+            "required": false,
+            "visible": "${data.cat_10_visible}",
+            "data-source": "${data.cat_10_items}"
+          },
+          {
+            "type": "CheckboxGroup",
+            "name": "cat_11_products",
+            "label": "${data.cat_11_name}",
+            "required": false,
+            "visible": "${data.cat_11_visible}",
+            "data-source": "${data.cat_11_items}"
+          },
+          {
+            "type": "CheckboxGroup",
+            "name": "cat_12_products",
+            "label": "${data.cat_12_name}",
+            "required": false,
+            "visible": "${data.cat_12_visible}",
+            "data-source": "${data.cat_12_items}"
+          },
+          {
             "type": "Footer",
             "label": "Continuar",
             "on-click-action": {
@@ -359,7 +528,11 @@
                 "selected_5": "${form.cat_5_products}",
                 "selected_6": "${form.cat_6_products}",
                 "selected_7": "${form.cat_7_products}",
-                "selected_8": "${form.cat_8_products}"
+                "selected_8": "${form.cat_8_products}",
+                "selected_9": "${form.cat_9_products}",
+                "selected_10": "${form.cat_10_products}",
+                "selected_11": "${form.cat_11_products}",
+                "selected_12": "${form.cat_12_products}"
               }
             }
           }
@@ -370,6 +543,14 @@
       "id": "QUANTITIES",
       "title": "Quantidades",
       "data": {
+        "has_notice": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "notice": {
+          "type": "string",
+          "__example__": ""
+        },
         "slot_1_id": {
           "type": "string",
           "__example__": "88"
@@ -513,6 +694,102 @@
         "slot_12_visible": {
           "type": "boolean",
           "__example__": false
+        },
+        "slot_13_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_13_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_13_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_14_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_14_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_14_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_15_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_15_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_15_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_16_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_16_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_16_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_17_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_17_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_17_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_18_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_18_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_18_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_19_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_19_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_19_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_20_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_20_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_20_visible": {
+          "type": "boolean",
+          "__example__": false
         }
       },
       "layout": {
@@ -525,6 +802,11 @@
           {
             "type": "TextBody",
             "text": "Defina quantos de cada item você quer."
+          },
+          {
+            "type": "TextCaption",
+            "text": "${data.notice}",
+            "visible": "${data.has_notice}"
           },
           {
             "type": "Dropdown",
@@ -1115,6 +1397,398 @@
             ]
           },
           {
+            "type": "Dropdown",
+            "name": "qty_13",
+            "label": "${data.slot_13_title}",
+            "required": false,
+            "visible": "${data.slot_13_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_14",
+            "label": "${data.slot_14_title}",
+            "required": false,
+            "visible": "${data.slot_14_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_15",
+            "label": "${data.slot_15_title}",
+            "required": false,
+            "visible": "${data.slot_15_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_16",
+            "label": "${data.slot_16_title}",
+            "required": false,
+            "visible": "${data.slot_16_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_17",
+            "label": "${data.slot_17_title}",
+            "required": false,
+            "visible": "${data.slot_17_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_18",
+            "label": "${data.slot_18_title}",
+            "required": false,
+            "visible": "${data.slot_18_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_19",
+            "label": "${data.slot_19_title}",
+            "required": false,
+            "visible": "${data.slot_19_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_20",
+            "label": "${data.slot_20_title}",
+            "required": false,
+            "visible": "${data.slot_20_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
             "type": "Footer",
             "label": "Continuar",
             "on-click-action": {
@@ -1143,7 +1817,23 @@
                 "q11": "${form.qty_11}",
                 "id11": "${data.slot_11_id}",
                 "q12": "${form.qty_12}",
-                "id12": "${data.slot_12_id}"
+                "id12": "${data.slot_12_id}",
+                "q13": "${form.qty_13}",
+                "id13": "${data.slot_13_id}",
+                "q14": "${form.qty_14}",
+                "id14": "${data.slot_14_id}",
+                "q15": "${form.qty_15}",
+                "id15": "${data.slot_15_id}",
+                "q16": "${form.qty_16}",
+                "id16": "${data.slot_16_id}",
+                "q17": "${form.qty_17}",
+                "id17": "${data.slot_17_id}",
+                "q18": "${form.qty_18}",
+                "id18": "${data.slot_18_id}",
+                "q19": "${form.qty_19}",
+                "id19": "${data.slot_19_id}",
+                "q20": "${form.qty_20}",
+                "id20": "${data.slot_20_id}"
               }
             }
           }

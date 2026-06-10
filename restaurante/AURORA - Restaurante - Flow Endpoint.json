@@ -337,7 +337,7 @@
             },
             {
               "name": "limit",
-              "value": "300"
+              "value": "500"
             }
           ]
         },
@@ -364,7 +364,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all().map((i) => i.json);\nconst products = (items.length === 1 && Array.isArray(items[0])) ? items[0] : items;\nconst brl = (v) => 'R$ ' + Number(v || 0).toFixed(2).replace('.', ',');\nconst groups = {}; const order = [];\nproducts.forEach((p) => { const cat = (p.categ_id && p.categ_id.name) || 'Outros'; if (!groups[cat]) { groups[cat] = []; order.push(cat); } groups[cat].push(p); });\nconst data = {};\norder.slice(0, 8).forEach((cat, i) => {\n  const n = i + 1;\n  data['cat_' + n + '_name'] = String(cat).slice(0, 30);\n  data['cat_' + n + '_visible'] = true;\n  data['cat_' + n + '_items'] = groups[cat].slice(0, 20).map((p) => ({ id: String(p.id), title: String(p.name || '').slice(0, 30), description: brl(p.list_price) }));\n});\nfor (let n = 1; n <= 8; n++) {\n  if (!data['cat_' + n + '_visible']) { data['cat_' + n + '_name'] = ''; data['cat_' + n + '_visible'] = false; data['cat_' + n + '_items'] = [{ id: '_', title: '-' }]; }\n}\nreturn [{ json: { response_to_send: { screen: 'PRODUCTS', data } } }];"
+        "jsCode": "const items = $input.all().map((i) => i.json);\nconst products = (items.length === 1 && Array.isArray(items[0])) ? items[0] : items;\nconst brl = (v) => 'R$ ' + Number(v || 0).toFixed(2).replace('.', ',');\nconst MAX_CATS = 12, MAX_PER_CAT = 20;\nconst groups = {}; const order = [];\nproducts.forEach((p) => { const cat = (p.categ_id && p.categ_id.name) || 'Outros'; if (!groups[cat]) { groups[cat] = []; order.push(cat); } groups[cat].push(p); });\nconst warnings = [];\nif (order.length > MAX_CATS) warnings.push('Categorias: ' + order.length + ' no total, cortou ' + (order.length - MAX_CATS));\nconst data = {};\norder.slice(0, MAX_CATS).forEach((cat, i) => {\n  const n = i + 1; const list = groups[cat];\n  if (list.length > MAX_PER_CAT) warnings.push('Categoria \"' + cat + '\": ' + list.length + ' itens, cortou ' + (list.length - MAX_PER_CAT));\n  data['cat_' + n + '_name'] = String(cat).slice(0, 30);\n  data['cat_' + n + '_visible'] = true;\n  data['cat_' + n + '_items'] = list.slice(0, MAX_PER_CAT).map((p) => ({ id: String(p.id), title: String(p.name || '').slice(0, 30), description: brl(p.list_price) }));\n});\nfor (let n = 1; n <= MAX_CATS; n++) { if (!data['cat_' + n + '_visible']) { data['cat_' + n + '_name'] = ''; data['cat_' + n + '_visible'] = false; data['cat_' + n + '_items'] = [{ id: '_', title: '-' }]; } }\ndata.has_notice = warnings.length > 0;\ndata.notice = warnings.length ? ('Aviso (corte): ' + warnings.join(' | ')) : '';\nif (warnings.length) console.log('[FLOW PRODUCTS overflow]', warnings.join(' | '));\nreturn [{ json: { response_to_send: { screen: 'PRODUCTS', data }, _warnings: warnings } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -374,7 +374,7 @@
       ],
       "id": "n009-0000-4000-8000-000000000000",
       "name": "Monta PRODUCTS",
-      "notes": "agrupa por categoria"
+      "notes": "agrupa por categoria + detecta corte"
     },
     {
       "parameters": {
@@ -389,7 +389,7 @@
             },
             {
               "name": "limit",
-              "value": "300"
+              "value": "500"
             }
           ]
         },
@@ -416,7 +416,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all().map((i) => i.json);\nconst products = (items.length === 1 && Array.isArray(items[0])) ? items[0] : items;\nconst byId = {};\nproducts.forEach((p) => { byId[String(p.id)] = p; });\nconst d = ($('Decryption').first().json.decryptedBody.data) || {};\nlet selected = [];\nfor (let c = 1; c <= 8; c++) { const arr = d['selected_' + c]; if (Array.isArray(arr)) selected = selected.concat(arr); }\nselected = selected.filter((x) => x && x !== '_');\nconst out = {};\nselected.slice(0, 12).forEach((pid, i) => {\n  const n = i + 1; const p = byId[String(pid)] || {};\n  out['slot_' + n + '_id'] = String(pid);\n  out['slot_' + n + '_title'] = String(p.name || ('Produto ' + pid)).slice(0, 20);\n  out['slot_' + n + '_visible'] = true;\n});\nfor (let n = 1; n <= 12; n++) {\n  if (!out['slot_' + n + '_visible']) { out['slot_' + n + '_id'] = ''; out['slot_' + n + '_title'] = ''; out['slot_' + n + '_visible'] = false; }\n}\nreturn [{ json: { response_to_send: { screen: 'QUANTITIES', data: out } } }];"
+        "jsCode": "const items = $input.all().map((i) => i.json);\nconst products = (items.length === 1 && Array.isArray(items[0])) ? items[0] : items;\nconst byId = {};\nproducts.forEach((p) => { byId[String(p.id)] = p; });\nconst d = ($('Decryption').first().json.decryptedBody.data) || {};\nconst MAX_CATS = 12, MAX_SLOTS = 20;\nlet selected = [];\nfor (let c = 1; c <= MAX_CATS; c++) { const arr = d['selected_' + c]; if (Array.isArray(arr)) selected = selected.concat(arr); }\nselected = selected.filter((x) => x && x !== '_');\nconst warnings = [];\nif (selected.length > MAX_SLOTS) warnings.push('Itens selecionados: ' + selected.length + ', cortou ' + (selected.length - MAX_SLOTS));\nconst out = {};\nselected.slice(0, MAX_SLOTS).forEach((pid, i) => {\n  const n = i + 1; const p = byId[String(pid)] || {};\n  out['slot_' + n + '_id'] = String(pid);\n  out['slot_' + n + '_title'] = String(p.name || ('Produto ' + pid)).slice(0, 20);\n  out['slot_' + n + '_visible'] = true;\n});\nfor (let n = 1; n <= MAX_SLOTS; n++) { if (!out['slot_' + n + '_visible']) { out['slot_' + n + '_id'] = ''; out['slot_' + n + '_title'] = ''; out['slot_' + n + '_visible'] = false; } }\nout.has_notice = warnings.length > 0;\nout.notice = warnings.length ? ('Aviso (corte): ' + warnings.join(' | ')) : '';\nif (warnings.length) console.log('[FLOW QUANTITIES overflow]', warnings.join(' | '));\nreturn [{ json: { response_to_send: { screen: 'QUANTITIES', data: out }, _warnings: warnings } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -426,11 +426,11 @@
       ],
       "id": "n011-0000-4000-8000-000000000000",
       "name": "Monta QUANTITIES",
-      "notes": "junta selecionados de todas as categorias"
+      "notes": "junta selecionados + detecta corte"
     },
     {
       "parameters": {
-        "jsCode": "const data = ($('Decryption').first().json.decryptedBody.data) || {};\nconst cart = [];\nfor (let n = 1; n <= 12; n++) {\n  const id = data['id' + n]; const q = parseInt(data['q' + n], 10);\n  if (id && q > 0) cart.push({ product_id: Number(id), quantity: q });\n}\nreturn [{ json: { response_to_send: { screen: 'DELIVERY', data: { cart: JSON.stringify(cart) } } } }];"
+        "jsCode": "const data = ($('Decryption').first().json.decryptedBody.data) || {};\nconst MAX_SLOTS = 20;\nconst cart = [];\nfor (let n = 1; n <= MAX_SLOTS; n++) {\n  const id = data['id' + n]; const q = parseInt(data['q' + n], 10);\n  if (id && q > 0) cart.push({ product_id: Number(id), quantity: q });\n}\nreturn [{ json: { response_to_send: { screen: 'DELIVERY', data: { cart: JSON.stringify(cart) } } } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
