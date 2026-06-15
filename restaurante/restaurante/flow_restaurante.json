@@ -1,0 +1,2424 @@
+{
+  "version": "7.0",
+  "data_api_version": "3.0",
+  "routing_model": {
+    "PRODUCTS": [
+      "QUANTITIES"
+    ],
+    "QUANTITIES": [
+      "DELIVERY"
+    ],
+    "DELIVERY": [
+      "SUMMARY"
+    ],
+    "SUMMARY": [
+      "SUCCESS"
+    ],
+    "SUCCESS": []
+  },
+  "screens": [
+    {
+      "id": "PRODUCTS",
+      "title": "Cardápio",
+      "data": {
+        "has_notice": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "notice": {
+          "type": "string",
+          "__example__": ""
+        },
+        "cat_1_name": {
+          "type": "string",
+          "__example__": "Food"
+        },
+        "cat_1_visible": {
+          "type": "boolean",
+          "__example__": true
+        },
+        "cat_1_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
+            {
+              "id": "88",
+              "title": "Almoço Maki 18 pc",
+              "description": "R$ 12,00"
+            }
+          ]
+        },
+        "cat_2_name": {
+          "type": "string",
+          "__example__": ""
+        },
+        "cat_2_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "cat_2_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
+            {
+              "id": "_",
+              "title": "-"
+            }
+          ]
+        },
+        "cat_3_name": {
+          "type": "string",
+          "__example__": ""
+        },
+        "cat_3_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "cat_3_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
+            {
+              "id": "_",
+              "title": "-"
+            }
+          ]
+        },
+        "cat_4_name": {
+          "type": "string",
+          "__example__": ""
+        },
+        "cat_4_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "cat_4_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
+            {
+              "id": "_",
+              "title": "-"
+            }
+          ]
+        },
+        "cat_5_name": {
+          "type": "string",
+          "__example__": ""
+        },
+        "cat_5_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "cat_5_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
+            {
+              "id": "_",
+              "title": "-"
+            }
+          ]
+        },
+        "cat_6_name": {
+          "type": "string",
+          "__example__": ""
+        },
+        "cat_6_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "cat_6_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
+            {
+              "id": "_",
+              "title": "-"
+            }
+          ]
+        },
+        "cat_7_name": {
+          "type": "string",
+          "__example__": ""
+        },
+        "cat_7_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "cat_7_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
+            {
+              "id": "_",
+              "title": "-"
+            }
+          ]
+        },
+        "cat_8_name": {
+          "type": "string",
+          "__example__": ""
+        },
+        "cat_8_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "cat_8_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
+            {
+              "id": "_",
+              "title": "-"
+            }
+          ]
+        },
+        "cat_9_name": {
+          "type": "string",
+          "__example__": ""
+        },
+        "cat_9_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "cat_9_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
+            {
+              "id": "_",
+              "title": "-"
+            }
+          ]
+        },
+        "cat_10_name": {
+          "type": "string",
+          "__example__": ""
+        },
+        "cat_10_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "cat_10_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
+            {
+              "id": "_",
+              "title": "-"
+            }
+          ]
+        },
+        "cat_11_name": {
+          "type": "string",
+          "__example__": ""
+        },
+        "cat_11_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "cat_11_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
+            {
+              "id": "_",
+              "title": "-"
+            }
+          ]
+        },
+        "cat_12_name": {
+          "type": "string",
+          "__example__": ""
+        },
+        "cat_12_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "cat_12_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
+            {
+              "id": "_",
+              "title": "-"
+            }
+          ]
+        }
+      },
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "TextHeading",
+            "text": "Monte seu pedido"
+          },
+          {
+            "type": "TextBody",
+            "text": "Selecione os itens de cada categoria."
+          },
+          {
+            "type": "TextCaption",
+            "text": "${data.notice}",
+            "visible": "${data.has_notice}"
+          },
+          {
+            "type": "CheckboxGroup",
+            "name": "cat_1_products",
+            "label": "${data.cat_1_name}",
+            "required": false,
+            "visible": "${data.cat_1_visible}",
+            "data-source": "${data.cat_1_items}"
+          },
+          {
+            "type": "CheckboxGroup",
+            "name": "cat_2_products",
+            "label": "${data.cat_2_name}",
+            "required": false,
+            "visible": "${data.cat_2_visible}",
+            "data-source": "${data.cat_2_items}"
+          },
+          {
+            "type": "CheckboxGroup",
+            "name": "cat_3_products",
+            "label": "${data.cat_3_name}",
+            "required": false,
+            "visible": "${data.cat_3_visible}",
+            "data-source": "${data.cat_3_items}"
+          },
+          {
+            "type": "CheckboxGroup",
+            "name": "cat_4_products",
+            "label": "${data.cat_4_name}",
+            "required": false,
+            "visible": "${data.cat_4_visible}",
+            "data-source": "${data.cat_4_items}"
+          },
+          {
+            "type": "CheckboxGroup",
+            "name": "cat_5_products",
+            "label": "${data.cat_5_name}",
+            "required": false,
+            "visible": "${data.cat_5_visible}",
+            "data-source": "${data.cat_5_items}"
+          },
+          {
+            "type": "CheckboxGroup",
+            "name": "cat_6_products",
+            "label": "${data.cat_6_name}",
+            "required": false,
+            "visible": "${data.cat_6_visible}",
+            "data-source": "${data.cat_6_items}"
+          },
+          {
+            "type": "CheckboxGroup",
+            "name": "cat_7_products",
+            "label": "${data.cat_7_name}",
+            "required": false,
+            "visible": "${data.cat_7_visible}",
+            "data-source": "${data.cat_7_items}"
+          },
+          {
+            "type": "CheckboxGroup",
+            "name": "cat_8_products",
+            "label": "${data.cat_8_name}",
+            "required": false,
+            "visible": "${data.cat_8_visible}",
+            "data-source": "${data.cat_8_items}"
+          },
+          {
+            "type": "CheckboxGroup",
+            "name": "cat_9_products",
+            "label": "${data.cat_9_name}",
+            "required": false,
+            "visible": "${data.cat_9_visible}",
+            "data-source": "${data.cat_9_items}"
+          },
+          {
+            "type": "CheckboxGroup",
+            "name": "cat_10_products",
+            "label": "${data.cat_10_name}",
+            "required": false,
+            "visible": "${data.cat_10_visible}",
+            "data-source": "${data.cat_10_items}"
+          },
+          {
+            "type": "CheckboxGroup",
+            "name": "cat_11_products",
+            "label": "${data.cat_11_name}",
+            "required": false,
+            "visible": "${data.cat_11_visible}",
+            "data-source": "${data.cat_11_items}"
+          },
+          {
+            "type": "CheckboxGroup",
+            "name": "cat_12_products",
+            "label": "${data.cat_12_name}",
+            "required": false,
+            "visible": "${data.cat_12_visible}",
+            "data-source": "${data.cat_12_items}"
+          },
+          {
+            "type": "Footer",
+            "label": "Continuar",
+            "on-click-action": {
+              "name": "data_exchange",
+              "payload": {
+                "selected_1": "${form.cat_1_products}",
+                "selected_2": "${form.cat_2_products}",
+                "selected_3": "${form.cat_3_products}",
+                "selected_4": "${form.cat_4_products}",
+                "selected_5": "${form.cat_5_products}",
+                "selected_6": "${form.cat_6_products}",
+                "selected_7": "${form.cat_7_products}",
+                "selected_8": "${form.cat_8_products}",
+                "selected_9": "${form.cat_9_products}",
+                "selected_10": "${form.cat_10_products}",
+                "selected_11": "${form.cat_11_products}",
+                "selected_12": "${form.cat_12_products}"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "QUANTITIES",
+      "title": "Quantidades",
+      "data": {
+        "has_notice": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "notice": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_1_id": {
+          "type": "string",
+          "__example__": "88"
+        },
+        "slot_1_title": {
+          "type": "string",
+          "__example__": "Almoço Maki 18 pc"
+        },
+        "slot_1_visible": {
+          "type": "boolean",
+          "__example__": true
+        },
+        "slot_2_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_2_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_2_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_3_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_3_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_3_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_4_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_4_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_4_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_5_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_5_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_5_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_6_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_6_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_6_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_7_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_7_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_7_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_8_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_8_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_8_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_9_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_9_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_9_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_10_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_10_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_10_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_11_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_11_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_11_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_12_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_12_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_12_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_13_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_13_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_13_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_14_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_14_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_14_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_15_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_15_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_15_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_16_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_16_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_16_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_17_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_17_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_17_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_18_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_18_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_18_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_19_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_19_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_19_visible": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "slot_20_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_20_title": {
+          "type": "string",
+          "__example__": ""
+        },
+        "slot_20_visible": {
+          "type": "boolean",
+          "__example__": false
+        }
+      },
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "TextHeading",
+            "text": "Quantidades"
+          },
+          {
+            "type": "TextBody",
+            "text": "Defina quantos de cada item você quer."
+          },
+          {
+            "type": "TextCaption",
+            "text": "${data.notice}",
+            "visible": "${data.has_notice}"
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_1",
+            "label": "${data.slot_1_title}",
+            "required": false,
+            "visible": "${data.slot_1_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_1",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_1_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_2",
+            "label": "${data.slot_2_title}",
+            "required": false,
+            "visible": "${data.slot_2_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_2",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_2_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_3",
+            "label": "${data.slot_3_title}",
+            "required": false,
+            "visible": "${data.slot_3_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_3",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_3_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_4",
+            "label": "${data.slot_4_title}",
+            "required": false,
+            "visible": "${data.slot_4_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_4",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_4_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_5",
+            "label": "${data.slot_5_title}",
+            "required": false,
+            "visible": "${data.slot_5_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_5",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_5_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_6",
+            "label": "${data.slot_6_title}",
+            "required": false,
+            "visible": "${data.slot_6_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_6",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_6_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_7",
+            "label": "${data.slot_7_title}",
+            "required": false,
+            "visible": "${data.slot_7_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_7",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_7_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_8",
+            "label": "${data.slot_8_title}",
+            "required": false,
+            "visible": "${data.slot_8_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_8",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_8_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_9",
+            "label": "${data.slot_9_title}",
+            "required": false,
+            "visible": "${data.slot_9_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_9",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_9_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_10",
+            "label": "${data.slot_10_title}",
+            "required": false,
+            "visible": "${data.slot_10_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_10",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_10_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_11",
+            "label": "${data.slot_11_title}",
+            "required": false,
+            "visible": "${data.slot_11_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_11",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_11_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_12",
+            "label": "${data.slot_12_title}",
+            "required": false,
+            "visible": "${data.slot_12_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_12",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_12_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_13",
+            "label": "${data.slot_13_title}",
+            "required": false,
+            "visible": "${data.slot_13_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_13",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_13_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_14",
+            "label": "${data.slot_14_title}",
+            "required": false,
+            "visible": "${data.slot_14_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_14",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_14_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_15",
+            "label": "${data.slot_15_title}",
+            "required": false,
+            "visible": "${data.slot_15_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_15",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_15_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_16",
+            "label": "${data.slot_16_title}",
+            "required": false,
+            "visible": "${data.slot_16_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_16",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_16_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_17",
+            "label": "${data.slot_17_title}",
+            "required": false,
+            "visible": "${data.slot_17_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_17",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_17_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_18",
+            "label": "${data.slot_18_title}",
+            "required": false,
+            "visible": "${data.slot_18_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_18",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_18_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_19",
+            "label": "${data.slot_19_title}",
+            "required": false,
+            "visible": "${data.slot_19_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_19",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_19_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
+          },
+          {
+            "type": "Dropdown",
+            "name": "qty_20",
+            "label": "${data.slot_20_title}",
+            "required": false,
+            "visible": "${data.slot_20_visible}",
+            "data-source": [
+              {
+                "id": "1",
+                "title": "1"
+              },
+              {
+                "id": "2",
+                "title": "2"
+              },
+              {
+                "id": "3",
+                "title": "3"
+              },
+              {
+                "id": "4",
+                "title": "4"
+              },
+              {
+                "id": "5",
+                "title": "5"
+              },
+              {
+                "id": "6",
+                "title": "6"
+              },
+              {
+                "id": "7",
+                "title": "7"
+              },
+              {
+                "id": "8",
+                "title": "8"
+              },
+              {
+                "id": "9",
+                "title": "9"
+              },
+              {
+                "id": "10",
+                "title": "10"
+              }
+            ]
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_20",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_20_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
+          },
+          {
+            "type": "TextSubheading",
+            "text": "Extras"
+          },
+          {
+            "type": "RadioButtonsGroup",
+            "name": "cutlery",
+            "label": "Deseja talheres?",
+            "required": true,
+            "data-source": [
+              {
+                "id": "sim",
+                "title": "Sim"
+              },
+              {
+                "id": "nao",
+                "title": "Não"
+              }
+            ]
+          },
+          {
+            "type": "Footer",
+            "label": "Continuar",
+            "on-click-action": {
+              "name": "data_exchange",
+              "payload": {
+                "q1": "${form.qty_1}",
+                "id1": "${data.slot_1_id}",
+                "obs1": "${form.obs_1}",
+                "q2": "${form.qty_2}",
+                "id2": "${data.slot_2_id}",
+                "obs2": "${form.obs_2}",
+                "q3": "${form.qty_3}",
+                "id3": "${data.slot_3_id}",
+                "obs3": "${form.obs_3}",
+                "q4": "${form.qty_4}",
+                "id4": "${data.slot_4_id}",
+                "obs4": "${form.obs_4}",
+                "q5": "${form.qty_5}",
+                "id5": "${data.slot_5_id}",
+                "obs5": "${form.obs_5}",
+                "q6": "${form.qty_6}",
+                "id6": "${data.slot_6_id}",
+                "obs6": "${form.obs_6}",
+                "q7": "${form.qty_7}",
+                "id7": "${data.slot_7_id}",
+                "obs7": "${form.obs_7}",
+                "q8": "${form.qty_8}",
+                "id8": "${data.slot_8_id}",
+                "obs8": "${form.obs_8}",
+                "q9": "${form.qty_9}",
+                "id9": "${data.slot_9_id}",
+                "obs9": "${form.obs_9}",
+                "q10": "${form.qty_10}",
+                "id10": "${data.slot_10_id}",
+                "obs10": "${form.obs_10}",
+                "q11": "${form.qty_11}",
+                "id11": "${data.slot_11_id}",
+                "obs11": "${form.obs_11}",
+                "q12": "${form.qty_12}",
+                "id12": "${data.slot_12_id}",
+                "obs12": "${form.obs_12}",
+                "q13": "${form.qty_13}",
+                "id13": "${data.slot_13_id}",
+                "obs13": "${form.obs_13}",
+                "q14": "${form.qty_14}",
+                "id14": "${data.slot_14_id}",
+                "obs14": "${form.obs_14}",
+                "q15": "${form.qty_15}",
+                "id15": "${data.slot_15_id}",
+                "obs15": "${form.obs_15}",
+                "q16": "${form.qty_16}",
+                "id16": "${data.slot_16_id}",
+                "obs16": "${form.obs_16}",
+                "q17": "${form.qty_17}",
+                "id17": "${data.slot_17_id}",
+                "obs17": "${form.obs_17}",
+                "q18": "${form.qty_18}",
+                "id18": "${data.slot_18_id}",
+                "obs18": "${form.obs_18}",
+                "q19": "${form.qty_19}",
+                "id19": "${data.slot_19_id}",
+                "obs19": "${form.obs_19}",
+                "q20": "${form.qty_20}",
+                "id20": "${data.slot_20_id}",
+                "obs20": "${form.obs_20}",
+                "cutlery": "${form.cutlery}"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "DELIVERY",
+      "title": "Entrega",
+      "data": {
+        "cart": {
+          "type": "string",
+          "__example__": "[]"
+        }
+      },
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "TextHeading",
+            "text": "Dados de entrega"
+          },
+          {
+            "type": "TextInput",
+            "name": "customer_name",
+            "label": "Nome",
+            "input-type": "text",
+            "required": true
+          },
+          {
+            "type": "TextInput",
+            "name": "phone",
+            "label": "Telefone",
+            "input-type": "phone",
+            "required": true
+          },
+          {
+            "type": "TextInput",
+            "name": "street",
+            "label": "Rua",
+            "input-type": "text",
+            "required": true
+          },
+          {
+            "type": "TextInput",
+            "name": "number",
+            "label": "Número",
+            "input-type": "text",
+            "required": true
+          },
+          {
+            "type": "TextInput",
+            "name": "neighborhood",
+            "label": "Bairro",
+            "input-type": "text",
+            "required": false
+          },
+          {
+            "type": "TextArea",
+            "name": "complement",
+            "label": "Complemento / observações",
+            "required": false
+          },
+          {
+            "type": "Footer",
+            "label": "Revisar pedido",
+            "on-click-action": {
+              "name": "data_exchange",
+              "payload": {
+                "cart": "${data.cart}",
+                "customer_name": "${form.customer_name}",
+                "phone": "${form.phone}",
+                "street": "${form.street}",
+                "number": "${form.number}",
+                "neighborhood": "${form.neighborhood}",
+                "complement": "${form.complement}"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "SUMMARY",
+      "title": "Resumo",
+      "data": {
+        "delivery_text": {
+          "type": "string",
+          "__example__": "Entrega: João, Rua A, 100 - Centro"
+        },
+        "items_text": {
+          "type": "string",
+          "__example__": "2x X-Burger - R$ 25,00\nR$ 50,00\n1x Coca-Cola Lata - R$ 7,00\nR$ 7,00"
+        },
+        "subtotal_text": {
+          "type": "string",
+          "__example__": "Subtotal: R$ 57,00"
+        },
+        "delivery_fee_text": {
+          "type": "string",
+          "__example__": "Frete: R$ 0,00"
+        },
+        "tax_total": {
+          "type": "string",
+          "__example__": "Taxas: 15% (US): R$ 4,14 | 17% ICMS I (BR): R$ 4,69"
+        },
+        "total_text": {
+          "type": "string",
+          "__example__": "Total: R$ 57,00"
+        },
+        "order_payload": {
+          "type": "string",
+          "__example__": "{}"
+        },
+        "show_payment_method": {
+          "type": "boolean",
+          "__example__": true
+        },
+        "show_payment_type": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "show_cash": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "show_card": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "payment_method_selected": {
+          "type": "string",
+          "__example__": ""
+        },
+        "payment_type_selected": {
+          "type": "string",
+          "__example__": ""
+        },
+        "step": {
+          "type": "string",
+          "__example__": "payment_method"
+        }
+      },
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "TextHeading",
+            "text": "Resumo do Pedido"
+          },
+          {
+            "type": "TextCaption",
+            "text": "${data.delivery_text}"
+          },
+          {
+            "type": "TextCaption",
+            "text": "Confira os itens antes de continuar"
+          },
+          {
+            "type": "TextSubheading",
+            "text": "Itens"
+          },
+          {
+            "type": "TextBody",
+            "text": "${data.items_text}"
+          },
+          {
+            "type": "TextSubheading",
+            "text": "Valores"
+          },
+          {
+            "type": "TextCaption",
+            "text": "${data.subtotal_text}"
+          },
+          {
+            "type": "TextCaption",
+            "text": "${data.delivery_fee_text}"
+          },
+          {
+            "type": "TextCaption",
+            "text": "${data.tax_total}"
+          },
+          {
+            "type": "TextSubheading",
+            "text": "${data.total_text}"
+          },
+          {
+            "type": "TextSubheading",
+            "text": "Pagamento",
+            "visible": "${data.show_payment_method}"
+          },
+          {
+            "type": "RadioButtonsGroup",
+            "name": "payment_method",
+            "label": "Forma de pagamento",
+            "required": false,
+            "visible": "${data.show_payment_method}",
+            "data-source": [
+              {
+                "id": "online",
+                "title": "Pagamento online"
+              },
+              {
+                "id": "delivery",
+                "title": "Pagamento na entrega"
+              }
+            ]
+          },
+          {
+            "type": "TextSubheading",
+            "text": "Tipo de pagamento",
+            "visible": "${data.show_payment_type}"
+          },
+          {
+            "type": "RadioButtonsGroup",
+            "name": "payment_type",
+            "label": "Como deseja pagar?",
+            "required": false,
+            "visible": "${data.show_payment_type}",
+            "data-source": [
+              {
+                "id": "dinheiro",
+                "title": "Dinheiro"
+              },
+              {
+                "id": "cartao",
+                "title": "Cartão"
+              },
+              {
+                "id": "pix",
+                "title": "Pix"
+              }
+            ]
+          },
+          {
+            "type": "TextSubheading",
+            "text": "Troco",
+            "visible": "${data.show_cash}"
+          },
+          {
+            "type": "RadioButtonsGroup",
+            "name": "needs_change",
+            "label": "Precisa de troco?",
+            "required": false,
+            "visible": "${data.show_cash}",
+            "data-source": [
+              {
+                "id": "sim",
+                "title": "Sim"
+              },
+              {
+                "id": "nao",
+                "title": "Não"
+              }
+            ]
+          },
+          {
+            "type": "TextInput",
+            "name": "change_for",
+            "label": "Troco para quanto?",
+            "input-type": "number",
+            "required": false,
+            "visible": "${data.show_cash}",
+            "helper-text": "Ex: 50, 100"
+          },
+          {
+            "type": "TextSubheading",
+            "text": "Dados do Cartão",
+            "visible": "${data.show_card}"
+          },
+          {
+            "type": "TextInput",
+            "name": "card_name",
+            "label": "Nome no cartão",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.show_card}"
+          },
+          {
+            "type": "TextInput",
+            "name": "card_number",
+            "label": "Número do cartão",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.show_card}"
+          },
+          {
+            "type": "TextInput",
+            "name": "card_expiry",
+            "label": "Validade (MM/AA)",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.show_card}"
+          },
+          {
+            "type": "TextInput",
+            "name": "card_cvv",
+            "label": "CVV",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.show_card}"
+          },
+          {
+            "type": "Footer",
+            "label": "Confirmar pedido",
+            "on-click-action": {
+              "name": "data_exchange",
+              "payload": {
+                "order_payload": "${data.order_payload}",
+                "items_text": "${data.items_text}",
+                "subtotal_text": "${data.subtotal_text}",
+                "delivery_fee_text": "${data.delivery_fee_text}",
+                "tax_total": "${data.tax_total}",
+                "total_text": "${data.total_text}",
+                "delivery_text": "${data.delivery_text}",
+                "step": "${data.step}",
+                "payment_method_selected": "${data.payment_method_selected}",
+                "payment_type_selected": "${data.payment_type_selected}",
+                "payment_method": "${form.payment_method}",
+                "payment_type": "${form.payment_type}",
+                "needs_change": "${form.needs_change}",
+                "change_for": "${form.change_for}",
+                "card_name": "${form.card_name}",
+                "card_number": "${form.card_number}",
+                "card_expiry": "${form.card_expiry}",
+                "card_cvv": "${form.card_cvv}"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "SUCCESS",
+      "title": "Pronto!",
+      "terminal": true,
+      "success": true,
+      "data": {
+        "confirmation": {
+          "type": "string",
+          "__example__": "Pedido AURORA/0001 criado!"
+        }
+      },
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "TextHeading",
+            "text": "Pedido enviado ✅"
+          },
+          {
+            "type": "TextBody",
+            "text": "${data.confirmation}"
+          },
+          {
+            "type": "Footer",
+            "label": "Fechar",
+            "on-click-action": {
+              "name": "complete",
+              "payload": {}
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
