@@ -1,0 +1,1730 @@
+{
+  "name": "[EMPRESA X] - RESTAURANTE - FLUXO PRINCIPAL",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -25152,
+        -5888
+      ],
+      "id": "7bbaa2bf-b8f8-4bbe-9fcd-78e19bb1a103",
+      "name": "Quando chamado pelo Webhook",
+      "notes": "Recebe o item do [EMPRESA X] - WEBHOOK META (phone_number_id, message, contact, metadata...)."
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d1",
+              "name": "WA_TOKEN",
+              "value": "EAARN51HpxJIBQuZBNUDZA1EiW0vrUKlmbKzZAHjMvEW00HHZBZAmExQFPn5VUjv1bDxmqjycWugHcxX0UbwmzaKbvJpGS9rv1lWRUJkjeHKpMKU8XE6oSlVZA7RoQyy1jZBntATY3YaJwgRmmTiQKgq3qZCUuO32tnb82LFFENwp8VFTshuUahCLhmZB8PoEo0QZDZD",
+              "type": "string"
+            },
+            {
+              "id": "d2",
+              "name": "FLOW_ID",
+              "value": "1026378733241140",
+              "type": "string"
+            },
+            {
+              "id": "d3",
+              "name": "FLOW_MODE",
+              "value": "published",
+              "type": "string"
+            },
+            {
+              "id": "d4",
+              "name": "FLOW_CTA",
+              "value": "Fazer pedido",
+              "type": "string"
+            },
+            {
+              "id": "d5",
+              "name": "GRAPH_VERSION",
+              "value": "v24.0",
+              "type": "string"
+            },
+            {
+              "id": "d6",
+              "name": "ODOO_BASE_URL",
+              "value": "https://ocm19.lymtech.com.br",
+              "type": "string"
+            },
+            {
+              "id": "d7",
+              "name": "ODOO_AUTH_URL",
+              "value": "https://ocm19.lymtech.com.br/lym-auth/auth/token",
+              "type": "string"
+            },
+            {
+              "id": "d8",
+              "name": "ODOO_DATABASE",
+              "value": "pvd01",
+              "type": "string"
+            },
+            {
+              "id": "d9",
+              "name": "ODOO_API_KEY",
+              "value": "QytWfufQxqj_q5sXnkVwqQ",
+              "type": "string"
+            },
+            {
+              "id": "d10",
+              "name": "ODOO_API_SECRET",
+              "value": "gcgqQx0xR8rR3shA7wuOJy96-ac4HUeTzgCQRH4AhE8",
+              "type": "string"
+            },
+            {
+              "id": "d11",
+              "name": "ODOO_COMPANY_ID",
+              "value": "1",
+              "type": "string"
+            },
+            {
+              "id": "d12",
+              "name": "ODOO_POS_CONFIG_ID",
+              "value": "3",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -24960,
+        -5888
+      ],
+      "id": "253ba99e-e4d1-4fb5-b376-96b368dee59b",
+      "name": "Config Disparo",
+      "notes": "Token Cloud API + flow_id/mode/cta + credenciais Odoo (auth url, db, api-key/secret, base url, company/pos ids)."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Classifica a mensagem que chegou. A 'etapa' do usuario NAO e guardada:\n// ela vem carimbada no tipo da mensagem do WhatsApp.\nconst t = $('Quando chamado pelo Webhook').first().json;\nconst msg = t.message || {};\nconst contact = t.contact || {};\nconst rawFrom = msg.from || contact.wa_id || '';\nconst phone = String(rawFrom).replace(/\\D/g, '');\nconst profileName = (contact.profile && contact.profile.name) || '';\nconst phoneNumberId = t.phone_number_id;\n\nlet kind = 'text';      // text | button | flow_complete\nlet buttonId = null;\nlet flowResponse = null;\nconst mtype = msg.type;\n\nif (mtype === 'interactive' && msg.interactive) {\n  const it = msg.interactive;\n  if (it.type === 'nfm_reply' && it.nfm_reply) {\n    kind = 'flow_complete';\n    try { flowResponse = JSON.parse(it.nfm_reply.response_json || '{}'); } catch (e) { flowResponse = {}; }\n  } else if (it.type === 'button_reply' && it.button_reply) {\n    kind = 'button'; buttonId = it.button_reply.id || '';\n  } else if (it.type === 'list_reply' && it.list_reply) {\n    kind = 'button'; buttonId = it.list_reply.id || '';\n  } else {\n    kind = 'text'; // interactive desconhecido -> recomeca\n  }\n} else if (mtype === 'button' && msg.button) {\n  kind = 'button'; buttonId = msg.button.payload || msg.button.text || '';\n} else {\n  kind = 'text'; // text, image, audio, sticker, location... -> inicio\n}\n\nif (!phone) throw new Error('Mensagem sem telefone do cliente (message.from / contact.wa_id)');\nif (!phoneNumberId) throw new Error('Mensagem sem phone_number_id vindo do webhook');\n\nconst wamid = msg.id || '';\nlet text = '';\nif (mtype === 'text' && msg.text) text = msg.text.body || '';\n\nreturn [{ json: { phone, profileName, phoneNumberId, kind, buttonId, flowResponse, wamid, text, rawType: mtype || 'unknown' } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -24768,
+        -5888
+      ],
+      "id": "1816db4c-e6ed-4090-8a2d-fa0808dae9fb",
+      "name": "Classificar Mensagem",
+      "notes": "Deriva phone (digitos), kind (text/button/flow_complete) e buttonId. Entrada desconhecida -> text (recomeca)."
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "k-flow",
+                    "leftValue": "={{ $('Classificar Mensagem').first().json.kind }}",
+                    "rightValue": "flow_complete",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "flow_complete"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "k-button",
+                    "leftValue": "={{ $('Classificar Mensagem').first().json.kind }}",
+                    "rightValue": "button",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "button"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -23376,
+        -6352
+      ],
+      "id": "e0eab95c-6e64-4658-9c5d-1648392c967e",
+      "name": "Switch Tipo de Entrada",
+      "notes": "0=flow_complete 1=button 2(extra)=texto/inicio."
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b-novo",
+                    "leftValue": "={{ $('Classificar Mensagem').first().json.buttonId }}",
+                    "rightValue": "novo_pedido",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "novo_pedido"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b-atend",
+                    "leftValue": "={{ $('Classificar Mensagem').first().json.buttonId }}",
+                    "rightValue": "falar_atendente",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "falar_atendente"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b-status",
+                    "leftValue": "={{ $('Classificar Mensagem').first().json.buttonId }}",
+                    "rightValue": "status:",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "status"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -22800,
+        -6352
+      ],
+      "id": "3f84067f-312b-4f6b-9a67-9153d899abba",
+      "name": "Switch Botão",
+      "notes": "0=novo_pedido 1=falar_atendente 2=status:<id> 3(extra)=desconhecido->inicio."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Botao 'Fazer novo pedido' -> reabre o Flow do cardapio.\nconst c = $('Classificar Mensagem').first().json;\nconst cfg = $('Config Disparo').first().json;\nconst NL = String.fromCharCode(10);\nlet ctx = {};\ntry { ctx = $('Sessão Claim').first().json.context || {}; } catch (e) { ctx = {}; }\nif (typeof ctx === 'string') { try { ctx = JSON.parse(ctx); } catch (e) { ctx = {}; } }\nconst openId = (ctx && ctx.open_order_id) ? ctx.open_order_id : '';\nconst accepted = !!(ctx && ctx.order_accepted);\nconst flowToken = 'aurora-rest-' + c.phone + '-' + Date.now();\nconst payload = {\n  messaging_product: 'whatsapp', recipient_type: 'individual', to: c.phone, type: 'interactive',\n  interactive: {\n    type: 'flow',\n    header: { type: 'text', text: 'Cardápio Aurora' },\n    body: { text: 'Boa! Toque abaixo para montar seu novo pedido 🍔' + NL + NL + '💬 A qualquer momento, digite *menu* para ver suas opções.' },\n    footer: { text: 'Grupo Aurora' },\n    action: { name: 'flow', parameters: { flow_message_version: '3', flow_token: flowToken, flow_id: cfg.FLOW_ID, mode: cfg.FLOW_MODE, flow_cta: cfg.FLOW_CTA, flow_action: 'data_exchange' } }\n  }\n};\nlet followup = null;\nif (openId) {\n  const fb = [ { type: 'reply', reply: { id: 'status:' + openId, title: 'Status do pedido' } } ];\n  if (accepted) fb.push({ type: 'reply', reply: { id: 'falar_atendente', title: 'Falar c/ atendente' } });\n  followup = { messaging_product: 'whatsapp', recipient_type: 'individual', to: c.phone, type: 'interactive', interactive: { type: 'button', body: { text: 'Ou, se preferir, acompanhe seu pedido em aberto:' }, action: { buttons: fb } } };\n}\nreturn [{ json: { phoneNumberId: c.phoneNumberId, payload, followup, session: { context: { open_order_id: openId, order_accepted: accepted } } } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -22304,
+        -6400
+      ],
+      "id": "bb31f56a-7b26-437e-baec-04a7a2c99f88",
+      "name": "Build Flow (Novo Pedido)"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Botao 'Falar com atendente' -> placeholder (sem coexistencia ainda).\nconst c = $('Classificar Mensagem').first().json;\nconst NL = String.fromCharCode(10);\nconst text = 'Logo logo um atendente assume por aqui 🙂' + NL + NL + 'Esse recurso ainda está em implantação. Enquanto isso, posso te ajudar a fazer um pedido — é só tocar no botão abaixo 👇';\nconst payload = { messaging_product: 'whatsapp', recipient_type: 'individual', to: c.phone, type: 'interactive', interactive: { type: 'button', body: { text }, action: { buttons: [ { type: 'reply', reply: { id: 'novo_pedido', title: 'Fazer novo pedido' } } ] } } };\nreturn [{ json: { phoneNumberId: c.phoneNumberId, payload, session: { state: 'HUMAN' } } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -22304,
+        -6192
+      ],
+      "id": "a8d77d37-4d98-4878-a364-70828f64fd13",
+      "name": "Build Atendente"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Config Disparo').first().json.ODOO_BASE_URL }}/lym/pos/pointofsales/customers/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "phone",
+              "value": "={{ $('Classificar Mensagem').first().json.phone }}"
+            },
+            {
+              "name": "limit",
+              "value": "5"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + ($('Odoo Auth1').first().json.access_token || $('Odoo Auth1').first().json.token) }}"
+            },
+            {
+              "name": "X-Odoo-Database",
+              "value": "={{ $('Config Disparo').first().json.ODOO_DATABASE }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -22304,
+        -5968
+      ],
+      "id": "2238d99e-327c-4ce2-afe2-d7b3f202530c",
+      "name": "Odoo Cliente (Status)",
+      "onError": "continueErrorOutput",
+      "notes": "Busca o cliente para checar se o pedido consultado pertence a este telefone."
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Config Disparo').first().json.ODOO_BASE_URL + '/lym/pos/pointofsales/orders/' + ($('Classificar Mensagem').first().json.buttonId || '').split(':')[1] }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + ($('Odoo Auth1').first().json.access_token || $('Odoo Auth1').first().json.token) }}"
+            },
+            {
+              "name": "X-Odoo-Database",
+              "value": "={{ $('Config Disparo').first().json.ODOO_DATABASE }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -22048,
+        -5984
+      ],
+      "id": "41a38ec2-7945-4f7c-98c2-04225f17ceab",
+      "name": "Odoo Pedido Detalhe",
+      "onError": "continueErrorOutput",
+      "notes": "GET /orders/{id}. 404/erro tambem vai para Monta Status (que trata)."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Mostra o status atual do pedido consultado, revalidando no Odoo.\nconst c = $('Classificar Mensagem').first().json;\nlet o = $input.first() ? $input.first().json : null;\nif (o && o.data && !o.id) o = o.data; // caso a API embrulhe em {data:{...}}\nif (Array.isArray(o)) o = o[0] || null;\nconst wanted = (c.buttonId || '').split(':')[1];\n\n// /customers/search retorna array; o HTTP node quebra em varios items.\nlet cItems = [];\ntry { cItems = $('Odoo Cliente (Status)').all().map((i) => i.json); } catch (e) { cItems = []; }\nlet custList = [];\nif (cItems.length > 1) {\n  custList = cItems;\n} else {\n  const f = cItems.length ? cItems[0] : null;\n  if (Array.isArray(f)) custList = f;\n  else if (f && Array.isArray(f.data)) custList = f.data;\n  else if (f && (f.id || f.phone)) custList = [f];\n  else custList = [];\n}\nconst me = custList.find((x) => String(x.phone || '').replace(/\\D/g, '') === c.phone) || custList[0] || null;\n\nconst STATES = { pending: 'aguardando o restaurante aceitar ⏳', draft: 'aceito, em preparo 👨\\u200d🍳', out_for_delivery: 'saiu para entrega 🛵', paid: 'pago / finalizado ✅', rejected: 'recusado pelo restaurante ❌' };\nconst brl = (v) => 'R$ ' + Number(v || 0).toFixed(2).replace('.', ',');\n\nconst hasOrder = o && o.id && o.state;\nconst ownerOk = hasOrder && o.partner_id && me && Number(o.partner_id.id) === Number(me.id);\nconst NL = String.fromCharCode(10);\nconst EXPLAIN = { pending: 'O restaurante ainda não aceitou. Assim que aceitarem o preparo, te aviso por aqui 🙂', draft: 'Seu pedido foi aceito e já está em preparo 🍳', out_for_delivery: 'Seu pedido saiu para entrega 🛵 chega já!', paid: 'Pedido finalizado. Bom apetite! 😋', rejected: 'Infelizmente o restaurante recusou o pedido 😕 Você pode tentar um novo pedido.' };\n\nlet text;\nif (hasOrder && ownerOk) {\n  const label = STATES[o.state] || ('status: ' + o.state);\n  let detalhes = '';\n  try { if (Array.isArray(o.lines) && o.lines.length) { detalhes = NL + NL + 'Itens:' + NL + o.lines.map((l) => '• ' + (l.qty || l.quantity || 1) + 'x ' + ((l.product_id && l.product_id.name) || l.full_product_name || l.name || 'item')).join(NL); } } catch (e) { detalhes = ''; }\n  text = '📋 Pedido ' + (o.name || ('#' + o.id)) + NL + 'Status: ' + label + NL + (EXPLAIN[o.state] || '') + detalhes + NL + NL + 'Total: ' + brl(o.amount_total);\n} else if (hasOrder && !ownerOk) {\n  text = 'Esse pedido não está vinculado ao seu número 🤔\\nSe quiser, toque em \"Fazer novo pedido\" para começar.';\n} else {\n  text = 'Não encontrei o pedido ' + (wanted ? '#' + wanted : '') + ' 🤔\\nPode ser que já tenha sido finalizado. Quer fazer um novo pedido?';\n}\nconst trackId = (hasOrder && ownerOk) ? o.id : '';\nconst accepted = hasOrder && ownerOk && ['pending', 'rejected'].indexOf(o.state) === -1;\nconst buttons = [];\nif (trackId) buttons.push({ type: 'reply', reply: { id: 'status:' + trackId, title: 'Status do pedido' } });\nbuttons.push({ type: 'reply', reply: { id: 'novo_pedido', title: 'Fazer novo pedido' } });\nif (accepted) buttons.push({ type: 'reply', reply: { id: 'falar_atendente', title: 'Falar c/ atendente' } });\nconst payload = { messaging_product: 'whatsapp', recipient_type: 'individual', to: c.phone, type: 'interactive', interactive: { type: 'button', body: { text }, action: { buttons: buttons.slice(0, 3) } } };\nreturn [{ json: { phoneNumberId: c.phoneNumberId, payload, session: { context: { open_order_id: trackId, order_accepted: accepted } } } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -21840,
+        -5984
+      ],
+      "id": "bcf5cdae-9237-4127-9258-f824315f226d",
+      "name": "Monta Status"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Config Disparo').first().json.ODOO_BASE_URL }}/lym/pos/pointofsales/customers/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "phone",
+              "value": "={{ $('Classificar Mensagem').first().json.phone }}"
+            },
+            {
+              "name": "limit",
+              "value": "5"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + ($('Odoo Auth1').first().json.access_token || $('Odoo Auth1').first().json.token) }}"
+            },
+            {
+              "name": "X-Odoo-Database",
+              "value": "={{ $('Config Disparo').first().json.ODOO_DATABASE }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -22304,
+        -5728
+      ],
+      "id": "6d98911c-4da8-40b0-8f8f-679a25b7a966",
+      "name": "Odoo Customers",
+      "onError": "continueErrorOutput",
+      "notes": "Busca cliente por telefone (entrada principal). Falha -> Monta Fallback."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Avalia se o cliente existe na base do Odoo.\n// A API /customers/search retorna um array; o HTTP node quebra o array em\n// varios items, entao normalizamos $input.all() para uma unica lista.\nconst c = $('Classificar Mensagem').first().json;\nconst items = $input.all().map((i) => i.json);\nlet list = [];\nif (items.length > 1) {\n  list = items; // array quebrado em varios items\n} else {\n  const f = items.length ? items[0] : null;\n  if (Array.isArray(f)) list = f;\n  else if (f && Array.isArray(f.data)) list = f.data;\n  else if (f && (f.id || f.phone)) list = [f]; // objeto unico de cliente\n  else list = [];\n}\nconst me = list.find((x) => String(x.phone || '').replace(/\\D/g, '') === c.phone) || list.find((x) => x.active !== false) || list[0] || null;\nreturn [{ json: { exists: !!me, customerId: me ? me.id : null, customerName: me ? me.name : '', phone: c.phone, phoneNumberId: c.phoneNumberId, profileName: c.profileName } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -22016,
+        -5632
+      ],
+      "id": "c5e8dbaf-d68e-4bf0-b58b-7d994fc78f6a",
+      "name": "Avalia Cliente"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "exists",
+              "leftValue": "={{ $json.exists }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -21824,
+        -5632
+      ],
+      "id": "5db6765b-5677-4b37-8ae9-8b3caffbf2c9",
+      "name": "Cliente Existe?"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Config Disparo').first().json.ODOO_BASE_URL }}/lym/pos/pointofsales/orders",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "state",
+              "value": "pending"
+            },
+            {
+              "name": "source",
+              "value": "whatsapp_flow"
+            },
+            {
+              "name": "pos_config_id",
+              "value": "={{ $('Config Disparo').first().json.ODOO_POS_CONFIG_ID }}"
+            },
+            {
+              "name": "limit",
+              "value": "200"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + ($('Odoo Auth1').first().json.access_token || $('Odoo Auth1').first().json.token) }}"
+            },
+            {
+              "name": "X-Odoo-Database",
+              "value": "={{ $('Config Disparo').first().json.ODOO_DATABASE }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -21632,
+        -5712
+      ],
+      "id": "e0950da9-74cd-4dca-a916-920b77c4234e",
+      "name": "Odoo Pedidos (Cliente)",
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Cliente existente: tem pedido aberto? -> menu de 3 botoes; senao -> abre o Flow.\n// A API /orders retorna um array; o HTTP node quebra em varios items, entao\n// normalizamos $input.all() para uma unica lista.\nconst a = $('Avalia Cliente').first().json;\nconst cfg = $('Config Disparo').first().json;\nconst items = $input.all().map((i) => i.json);\nlet orders = [];\nif (items.length > 1) {\n  orders = items;\n} else {\n  const f = items.length ? items[0] : null;\n  if (Array.isArray(f)) orders = f;\n  else if (f && Array.isArray(f.data)) orders = f.data;\n  else if (f && f.id) orders = [f];\n  else orders = [];\n}\nconst CLOSED = ['rejected', 'cancel', 'cancelled', 'done', 'invoiced', 'paid'];\nconst open = orders.filter((o) => o.partner_id && Number(o.partner_id.id) === Number(a.customerId) && CLOSED.indexOf(o.state) === -1);\nopen.sort((x, y) => Number(y.id) - Number(x.id));\nconst firstName = String(a.customerName || a.profileName || '').split(' ')[0];\n\nlet payload;\nlet sessionHint = null;\nif (open.length > 0) {\n  const ord = open[0];\n  const STATES = { pending: 'aguardando o restaurante aceitar ⏳', draft: 'aceito, em preparo 🍳', out_for_delivery: 'saiu para entrega 🛵', paid: 'finalizado ✅' };\n  const accepted = ['pending', 'rejected'].indexOf(ord.state) === -1;\n  const NL = String.fromCharCode(10);\n  const brl = (v) => 'R$ ' + Number(v || 0).toFixed(2).replace('.', ',');\n  const statusLbl = STATES[ord.state] || ord.state;\n  const bodyText = '📋 Você tem um pedido em aberto:' + NL + NL + (ord.name || ('#' + ord.id)) + NL + 'Status: ' + statusLbl + (ord.amount_total ? (NL + 'Total: ' + brl(ord.amount_total)) : '') + NL + NL + 'O que você quer fazer?';\n  const mbtns = [\n    { type: 'reply', reply: { id: 'status:' + ord.id, title: 'Status do pedido' } },\n    { type: 'reply', reply: { id: 'novo_pedido', title: 'Fazer novo pedido' } }\n  ];\n  if (accepted) mbtns.push({ type: 'reply', reply: { id: 'falar_atendente', title: 'Falar c/ atendente' } });\n  payload = { messaging_product: 'whatsapp', recipient_type: 'individual', to: a.phone, type: 'interactive', interactive: { type: 'button', body: { text: bodyText }, action: { buttons: mbtns } } };\n  sessionHint = { context: { open_order_id: ord.id, order_accepted: accepted } };\n} else {\n  const flowToken = 'aurora-rest-' + a.phone + '-' + Date.now();\n  payload = { messaging_product: 'whatsapp', recipient_type: 'individual', to: a.phone, type: 'interactive', interactive: { type: 'flow', header: { type: 'text', text: 'Cardápio Aurora' }, body: { text: 'Bem-vindo de volta, ' + (firstName || '') + '! 🍔 Toque abaixo para montar seu pedido.' + String.fromCharCode(10, 10) + '💬 A qualquer momento, digite *menu* para ver suas opções.' }, footer: { text: 'Grupo Aurora' }, action: { name: 'flow', parameters: { flow_message_version: '3', flow_token: flowToken, flow_id: cfg.FLOW_ID, mode: cfg.FLOW_MODE, flow_cta: cfg.FLOW_CTA, flow_action: 'data_exchange' } } } };\n  sessionHint = { context: { open_order_id: '', order_accepted: false } };\n}\nreturn [{ json: { phoneNumberId: a.phoneNumberId, payload, session: sessionHint } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -21440,
+        -5728
+      ],
+      "id": "65e766cf-6c6b-4920-ba8d-5f231834e7ce",
+      "name": "Decide Resposta"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Cliente novo: boas-vindas + abre o Flow. O cliente sera criado no Odoo ao gerar a ordem.\nconst a = $('Avalia Cliente').first().json;\nconst cfg = $('Config Disparo').first().json;\nconst flowToken = 'aurora-rest-' + a.phone + '-' + Date.now();\nconst nome = String(a.profileName || '').split(' ')[0];\nconst payload = {\n  messaging_product: 'whatsapp', recipient_type: 'individual', to: a.phone, type: 'interactive',\n  interactive: {\n    type: 'flow',\n    header: { type: 'text', text: 'Bem-vindo à Aurora 🍔' },\n    body: { text: (nome ? ('Olá, ' + nome + '! ') : 'Olá! ') + 'Que bom ter você aqui 😄 Toque abaixo para ver o cardápio e fazer seu primeiro pedido.' + String.fromCharCode(10, 10) + '💬 A qualquer momento, digite *menu* para ver suas opções.' },\n    footer: { text: 'Grupo Aurora' },\n    action: { name: 'flow', parameters: { flow_message_version: '3', flow_token: flowToken, flow_id: cfg.FLOW_ID, mode: cfg.FLOW_MODE, flow_cta: cfg.FLOW_CTA, flow_action: 'data_exchange' } }\n  }\n};\nreturn [{ json: { phoneNumberId: a.phoneNumberId, payload, session: { context: { open_order_id: '', order_accepted: false } } } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -21632,
+        -5552
+      ],
+      "id": "de36227f-cd40-483e-a174-ae6b2c0781b6",
+      "name": "Build Flow (Novo Cliente)"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Mensagem de fallback quando o Odoo falha (qualquer saida de erro).\nconst c = $('Classificar Mensagem').first().json;\nconst NL = String.fromCharCode(10);\nconst text = 'Tivemos uma instabilidade momentânea por aqui 🙏' + NL + 'Pode tentar de novo pelo botão abaixo 👇';\nconst payload = { messaging_product: 'whatsapp', recipient_type: 'individual', to: c.phone, type: 'interactive', interactive: { type: 'button', body: { text }, action: { buttons: [ { type: 'reply', reply: { id: 'novo_pedido', title: 'Fazer novo pedido' } } ] } } };\nreturn [{ json: { phoneNumberId: c.phoneNumberId, payload } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -21216,
+        -5888
+      ],
+      "id": "fedf189f-3f46-47c2-89fd-d52c6c8e93d9",
+      "name": "Monta Fallback"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://graph.facebook.com/' + $('Config Disparo').first().json.GRAPH_VERSION + '/' + $json.phoneNumberId + '/messages' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $('Config Disparo').first().json.WA_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.payload }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -20688,
+        -6192
+      ],
+      "id": "e878958f-63d7-4661-be74-a998d936f3d4",
+      "name": "Enviar WhatsApp (Cloud API)",
+      "notes": "Unico ponto de envio. Recebe { phoneNumberId, payload } de qualquer ramo."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "hasfu",
+              "leftValue": "={{ $('Funil Envio').first().json.hasFollowup }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -20480,
+        -6400
+      ],
+      "id": "a1c10008-0000-4000-8000-000000000008",
+      "name": "Tem Follow-up?",
+      "notes": "Se o envio foi um Flow com opcoes (pedido pendente), manda a 2a mensagem com botoes."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://graph.facebook.com/' + $('Config Disparo').first().json.GRAPH_VERSION + '/' + $('Funil Envio').first().json.phoneNumberId + '/messages' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $('Config Disparo').first().json.WA_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Funil Envio').first().json.followup }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -20288,
+        -6480
+      ],
+      "id": "a1c10009-0000-4000-8000-000000000009",
+      "name": "Enviar Follow-up",
+      "onError": "continueRegularOutput",
+      "notes": "2a mensagem (botoes de Status/Atendente) enviada logo apos o Flow, quando ha pedido pendente."
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pedido-aceito-restaurante",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -24000,
+        -8600
+      ],
+      "id": "push00000-0000-4000-8000-0000000a0001",
+      "name": "Webhook Pedido Aceito",
+      "webhookId": "pedido-aceito-restaurante",
+      "notes": "Odoo chama quando aceita o pedido. URL: https://<n8n>/webhook/pedido-aceito-restaurante. Body: { phone, order_id, order_name?, amount_total?, secret }."
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pedido-saiu-entrega",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -24000,
+        -8200
+      ],
+      "id": "push00000-0000-4000-8000-0000000a0002",
+      "name": "Webhook Pedido Saiu",
+      "webhookId": "pedido-saiu-entrega",
+      "notes": "Odoo chama quando o pedido sai para entrega. URL: https://<n8n>/webhook/pedido-saiu-entrega. Body: { phone, order_id, order_name?, amount_total?, secret }."
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "mt1",
+              "name": "push_type",
+              "value": "accepted",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -23700,
+        -8600
+      ],
+      "id": "push00000-0000-4000-8000-0000000a0003",
+      "name": "Marca Tipo Aceito"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "mt2",
+              "name": "push_type",
+              "value": "out_for_delivery",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -23700,
+        -8200
+      ],
+      "id": "push00000-0000-4000-8000-0000000a0004",
+      "name": "Marca Tipo Saiu"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cp1",
+              "name": "WA_TOKEN",
+              "value": "EAARN51HpxJIBQuZBNUDZA1EiW0vrUKlmbKzZAHjMvEW00HHZBZAmExQFPn5VUjv1bDxmqjycWugHcxX0UbwmzaKbvJpGS9rv1lWRUJkjeHKpMKU8XE6oSlVZA7RoQyy1jZBntATY3YaJwgRmmTiQKgq3qZCUuO32tnb82LFFENwp8VFTshuUahCLhmZB8PoEo0QZDZD",
+              "type": "string"
+            },
+            {
+              "id": "cp2",
+              "name": "GRAPH_VERSION",
+              "value": "v24.0",
+              "type": "string"
+            },
+            {
+              "id": "cp3",
+              "name": "WA_PHONE_NUMBER_ID",
+              "value": "928746166998844",
+              "type": "string"
+            },
+            {
+              "id": "cp4",
+              "name": "PUSH_SECRET",
+              "value": "aurora-push-troque-isto",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -23400,
+        -8400
+      ],
+      "id": "push00000-0000-4000-8000-0000000a0005",
+      "name": "Config Push",
+      "notes": "Token Cloud API + GRAPH_VERSION + WA_PHONE_NUMBER_ID (numero/BM) + PUSH_SECRET (valide nos pushes). TROQUE o PUSH_SECRET por copia/BM."
+    },
+    {
+      "parameters": {
+        "jsCode": "const wh = $json;\nconst body = wh.body || {};\nconst secret = (wh.headers && wh.headers['x-webhook-secret']) || body.secret || '';\nif (String(secret) !== String(wh.PUSH_SECRET || '')) return [];\nconst phone = String(body.phone || '').replace(/\\D/g, '');\nif (!phone) return [];\nconst NL = String.fromCharCode(10);\nconst orderId = body.order_id || body.id || '';\nconst ref = body.order_name || (orderId ? ('#' + orderId) : 'seu pedido');\nconst total = (body.amount_total != null && body.amount_total !== '') ? ('Total: R$ ' + Number(body.amount_total).toFixed(2).replace('.', ',')) : '';\nlet text;\nif (wh.push_type === 'accepted') {\n  text = '🎉 Boa notícia! Seu pedido ' + ref + ' foi aceito pelo restaurante e já está sendo preparado 🍳' + (total ? (NL + NL + total) : '') + NL + NL + 'Te aviso assim que sair para entrega 🛵';\n} else {\n  text = '🛵 Seu pedido ' + ref + ' saiu para entrega!' + (total ? (NL + NL + total) : '') + NL + NL + 'Já está a caminho — bom apetite! 😋';\n}\nconst payload = { messaging_product: 'whatsapp', recipient_type: 'individual', to: phone, type: 'interactive', interactive: { type: 'button', body: { text }, action: { buttons: [ { type: 'reply', reply: { id: 'menu', title: 'Menu' } } ] } } };\nconst channel = String(wh.WA_PHONE_NUMBER_ID || '');\nconst Q = (s) => \"'\" + String(s == null ? '' : s).split(\"'\").join(\"''\") + \"'\";\nconst ctx = { open_order_id: orderId || '', order_accepted: true };\nconst va = JSON.stringify(['menu']);\nconst cj = JSON.stringify(ctx);\nconst saveSql = 'INSERT INTO wa_session (channel_id, phone, state, valid_actions, context, updated_at) VALUES (' + Q(channel) + ', ' + Q(phone) + ', ' + Q('ORDER_PLACED') + ', ' + Q(va) + '::jsonb, ' + Q(cj) + '::jsonb, now()) ON CONFLICT (channel_id, phone) DO UPDATE SET state = ' + Q('ORDER_PLACED') + ', valid_actions = ' + Q(va) + '::jsonb, context = wa_session.context || ' + Q(cj) + '::jsonb, updated_at = now();';\nreturn [{ json: { phone, phoneNumberId: channel, payload, WA_TOKEN: wh.WA_TOKEN, GRAPH_VERSION: wh.GRAPH_VERSION, saveSql } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -23100,
+        -8400
+      ],
+      "id": "push00000-0000-4000-8000-0000000a0006",
+      "name": "Prep Push",
+      "notes": "Valida PUSH_SECRET (header x-webhook-secret ou body.secret). Monta a msg conforme push_type e o SQL de upsert da sessao (merge no context). Sem segredo/telefone -> ignora."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://graph.facebook.com/' + $('Prep Push').first().json.GRAPH_VERSION + '/' + $('Prep Push').first().json.phoneNumberId + '/messages' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $('Prep Push').first().json.WA_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Prep Push').first().json.payload }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -22800,
+        -8400
+      ],
+      "id": "push00000-0000-4000-8000-0000000a0007",
+      "name": "Enviar Push",
+      "onError": "continueRegularOutput",
+      "notes": "Envia a notificacao de status (aceito / saiu) pela Cloud API."
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "={{ $('Prep Push').first().json.saveSql }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -22500,
+        -8400
+      ],
+      "id": "push00000-0000-4000-8000-0000000a0008",
+      "name": "Sessão Push Save",
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "postgres": {
+          "id": "tZ2mgy8cCNZefqzG",
+          "name": "LYM-BASE"
+        }
+      },
+      "notes": "Upsert da sessao: state=ORDER_PLACED, order_accepted=true, valid_actions=[menu], merge no context. Mantem o controle total do fluxo."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config Disparo').first().json.ODOO_AUTH_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Odoo-Database",
+              "value": "={{ $('Config Disparo').first().json.ODOO_DATABASE }}"
+            },
+            {
+              "name": "api-key",
+              "value": "={{ $('Config Disparo').first().json.ODOO_API_KEY }}"
+            },
+            {
+              "name": "api-secret",
+              "value": "={{ $('Config Disparo').first().json.ODOO_API_SECRET }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -24576,
+        -5888
+      ],
+      "id": "8ce18153-475f-4566-ac31-9c3f14a3d5c4",
+      "name": "Odoo Auth1",
+      "onError": "continueErrorOutput",
+      "notes": "1 auth por execucao. Falha -> saida de erro -> Monta Fallback."
+    },
+    {
+      "parameters": {
+        "jsCode": "// flow_complete: o pedido foi montado no Flow e veio no nfm_reply.\n// Aqui criamos o pedido no Odoo a partir do order_payload do Flow.\nconst c = $('Classificar Mensagem').first().json;\nconst fr = c.flowResponse || {};\nlet op = {};\ntry { op = (typeof fr.order_payload === 'string') ? JSON.parse(fr.order_payload || '{}') : (fr.order_payload || {}); } catch (e) { op = {}; }\nconst paymentType = (op.payment && op.payment.type) || '';\nreturn [{ json: { phone: c.phone, phoneNumberId: c.phoneNumberId, orderPayload: op, paymentType, pagamento: fr.pagamento || '', total: fr.total || '', itens: fr.itens || '', entrega: fr.entrega || '' } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -22304,
+        -6608
+      ],
+      "id": "9bb9878c-8a5e-4fb0-9624-b8d94c0940e2",
+      "name": "Prep Pedido (Flow)",
+      "notes": "Extrai order_payload do nfm_reply e o tipo de pagamento."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config Disparo').first().json.ODOO_BASE_URL }}/lym/pos/pointofsales/orders",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + ($('Odoo Auth1').first().json.access_token || $('Odoo Auth1').first().json.token) }}"
+            },
+            {
+              "name": "X-Odoo-Database",
+              "value": "={{ $('Config Disparo').first().json.ODOO_DATABASE }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.orderPayload }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -21776,
+        -6528
+      ],
+      "id": "2d142c7e-f067-438e-8660-f1ff8a799e56",
+      "name": "Odoo Criar Pedido (Flow)",
+      "onError": "continueErrorOutput",
+      "notes": "POST /orders com o order_payload vindo do Flow. Falha -> Monta Fallback."
+    },
+    {
+      "parameters": {
+        "jsCode": "const p = $('Prep Pedido (Flow)').first().json;\nconst order = $input.first() ? $input.first().json : {};\nconst ref = (order && order.name && order.name !== '/') ? order.name : (order && order.id ? ('#' + order.id) : '');\nconst oid = (order && order.id) ? order.id : '';\nconst NL = String.fromCharCode(10);\nconst STATES = { pending: 'aguardando o restaurante aceitar ⏳', draft: 'aceito, em preparo 🍳', out_for_delivery: 'saiu para entrega 🛵', paid: 'finalizado ✅', rejected: 'recusado ❌' };\nconst st = (order && order.state) ? order.state : 'pending';\nconst statusLabel = STATES[st] || st;\nconst text = '✅ Pedido ' + ref + ' enviado ao restaurante!' + NL + NL + (p.total || '') + NL + NL + 'Status: ' + statusLabel + NL + NL + 'Assim que o restaurante aceitar o preparo, te aviso por aqui 🍔' + NL + NL + 'Toque em *Menu* para ver suas opções.';\nconst payload = { messaging_product: 'whatsapp', recipient_type: 'individual', to: p.phone, type: 'interactive', interactive: { type: 'button', body: { text }, action: { buttons: [ { type: 'reply', reply: { id: 'menu', title: 'Menu' } } ] } } };\nreturn [{ json: { phoneNumberId: p.phoneNumberId, payload, session: { state: 'ORDER_PLACED', context: { open_order_id: oid, order_accepted: false } } } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -21520,
+        -6544
+      ],
+      "id": "f2f7220a-8b62-4a46-9e44-2e2657b7e6fa",
+      "name": "Monta Confirmacao (Flow)"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "is-online",
+              "leftValue": "={{ $json.paymentType }}",
+              "rightValue": "online",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -22000,
+        -6608
+      ],
+      "id": "96a4011b-0e5b-4069-9577-20edd2cea89e",
+      "name": "Pagamento online?",
+      "notes": "online -> so avisa recebido + pagamento pendente (pedido criado depois, no webhook do MP). entrega -> cria pedido e envia para a cozinha."
+    },
+    {
+      "parameters": {
+        "jsCode": "const p = $('Prep Pedido (Flow)').first().json;\nconst NL = String.fromCharCode(10);\nconst text = '✅ Pedido recebido!' + NL + NL + (p.total || '') + NL + NL + '💳 Pagamento pendente — pague pelo link do Mercado Pago para confirmar o pedido.' + NL + NL + '🔗 (link de pagamento em breve)' + NL + NL + 'Assim que o pagamento for confirmado, seu pedido vai para a cozinha do restaurante 🍔';\nconst payload = { messaging_product: 'whatsapp', recipient_type: 'individual', to: p.phone, type: 'interactive', interactive: { type: 'button', body: { text }, action: { buttons: [ { type: 'reply', reply: { id: 'novo_pedido', title: 'Fazer novo pedido' } } ] } } };\nreturn [{ json: { phoneNumberId: p.phoneNumberId, payload, session: { state: 'AWAITING_PAYMENT', context: { open_order_id: '', order_accepted: false } } } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -21776,
+        -6736
+      ],
+      "id": "1bc8c579-d06c-4523-beb7-2587cc03433b",
+      "name": "Monta Recebido Online (Flow)",
+      "notes": "TEMPORARIO: link MP placeholder. Quando o MP estiver integrado, gerar o link real e, no webhook de pagamento, criar o pedido no Odoo (cozinha)."
+    },
+    {
+      "parameters": {
+        "jsCode": "const c = $('Classificar Mensagem').first().json;\nconst channel = String(c.phoneNumberId || '');\nconst phone = String(c.phone || '');\nconst wamid = String(c.wamid || ('nowamid-' + Date.now() + '-' + Math.floor(Math.random() * 1e9)));\nconst Q = (s) => \"'\" + String(s == null ? '' : s).split(\"'\").join(\"''\") + \"'\";\nconst claimSql = 'INSERT INTO wa_session (channel_id, phone, last_wamid) VALUES (' + Q(channel) + ', ' + Q(phone) + ', ' + Q(wamid) + ') ON CONFLICT (channel_id, phone) DO UPDATE SET last_wamid = EXCLUDED.last_wamid WHERE wa_session.last_wamid IS DISTINCT FROM EXCLUDED.last_wamid RETURNING state, valid_actions, context, EXTRACT(EPOCH FROM (now() - updated_at))::int AS idle_seconds;';\nreturn [{ json: { claimSql, channel_id: channel, phone, wamid } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -24272,
+        -6096
+      ],
+      "id": "d59d10e0-f53b-4a7c-8f03-30626e5f8ac2",
+      "name": "Prep Claim",
+      "notes": "Monta o SQL de claim da sessao (idempotencia por wamid via dollar-quoting $wa$)."
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "={{ $json.claimSql }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -24064,
+        -6096
+      ],
+      "id": "aebd7586-3527-4123-918d-cbeda23b13c3",
+      "name": "Sessão Claim",
+      "credentials": {
+        "postgres": {
+          "id": "tZ2mgy8cCNZefqzG",
+          "name": "LYM-BASE"
+        }
+      },
+      "onError": "continueErrorOutput",
+      "notes": "INSERT...ON CONFLICT...RETURNING. 0 linhas = wamid repetido (reentrega da Meta) -> fluxo para. Erro -> Monta Fallback."
+    },
+    {
+      "parameters": {
+        "jsCode": "const c = $('Classificar Mensagem').first().json;\nlet sess = {};\ntry { sess = $('Sessão Claim').first().json || {}; } catch (e) { sess = {}; }\nif (!('state' in sess)) return [];\nconst TTL = 2700;\nlet state = sess.state || 'IDLE';\nlet validActions = sess.valid_actions;\nif (typeof validActions === 'string') { try { validActions = JSON.parse(validActions); } catch (e) { validActions = []; } }\nif (!Array.isArray(validActions)) validActions = [];\nlet context = sess.context;\nif (typeof context === 'string') { try { context = JSON.parse(context); } catch (e) { context = {}; } }\nif (!context || typeof context !== 'object') context = {};\nconst idle = Number(sess.idle_seconds || 0);\nif (idle > TTL) { state = 'IDLE'; validActions = []; }\nconst RESET = ['oi', 'ola', 'olá', 'menu', 'inicio', 'início', 'comecar', 'começar', 'recomecar', 'recomeçar', 'cancelar', 'voltar'];\nconst txt = (c.kind === 'text') ? String(c.text || '').trim().toLowerCase() : '';\nlet decision = 'proceed';\nlet reason = '';\nif (c.kind === 'flow_complete') {\n  const incoming = (c.flowResponse && c.flowResponse.flow_token) || '';\n  const last = context.last_flow_token || '';\n  if (last && incoming && incoming !== last && idle <= TTL) { decision = 'blocked'; reason = 'flow_stale'; }\n} else if (state === 'IDLE') {\n  decision = 'proceed';\n} else if (c.kind === 'text') {\n  if (RESET.indexOf(txt) !== -1) decision = 'proceed';\n  else { decision = 'blocked'; reason = 'text_offflow'; }\n} else if (c.kind === 'button') {\n  const GLOBAL = ['novo_pedido', 'falar_atendente', 'menu'];\n  const isGlobal = GLOBAL.indexOf(c.buttonId) !== -1 || String(c.buttonId).indexOf('status:') === 0;\n  if (validActions.indexOf(c.buttonId) !== -1 || isGlobal) decision = 'proceed';\n  else { decision = 'blocked'; reason = 'button_stale'; }\n} else {\n  decision = 'blocked'; reason = 'unknown';\n}\nreturn [{ json: { decision, reason, effectiveState: state, validActions, context, idle } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -23840,
+        -6224
+      ],
+      "id": "82fa09d9-4912-463e-bd40-a67458d01765",
+      "name": "Guarda de Contexto",
+      "notes": "FSM: aplica TTL (45min), valida entrada x estado/valid_actions. flow_complete = porta privilegiada com checagem do token (B). Sessao sem 'state' = duplicado -> ignora."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "go",
+              "leftValue": "={{ $('Guarda de Contexto').first().json.decision }}",
+              "rightValue": "proceed",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -23648,
+        -6224
+      ],
+      "id": "4e83785e-93d2-4f4b-8149-861382604497",
+      "name": "IF Prosseguir?",
+      "notes": "true -> roteamento normal (Switch Tipo de Entrada). false -> Reexibir Opções."
+    },
+    {
+      "parameters": {
+        "jsCode": "const c = $('Classificar Mensagem').first().json;\nconst g = $('Guarda de Contexto').first().json;\nconst reason = g.reason;\nconst NL = String.fromCharCode(10);\nlet actions = Array.isArray(g.validActions) ? g.validActions.slice() : [];\nconst TITLES = { novo_pedido: 'Fazer novo pedido', falar_atendente: 'Falar c/ atendente' };\nconst titleFor = (id) => (String(id).indexOf('status:') === 0 ? 'Acompanhar pedido' : (TITLES[id] || String(id)));\nlet body;\nif (reason === 'flow_stale') {\n  body = 'Esse pedido ficou aberto tempo demais e expirou ⏳' + NL + NL + 'Toque numa opção abaixo para continuar 👇';\n  actions = ['novo_pedido', 'falar_atendente'];\n} else if (reason === 'button_stale') {\n  body = 'Esse botão já não está mais disponível 🙏' + NL + NL + 'Use uma das opções atuais 👇';\n  if (!actions.length) actions = ['novo_pedido', 'falar_atendente'];\n} else if (reason === 'text_offflow') {\n  body = 'Pra não se perder, é só tocar numa opção 👇' + NL + 'Não precisa digitar — use os botões. (ou mande \"menu\" para recomeçar)';\n  if (!actions.length) actions = ['novo_pedido', 'falar_atendente'];\n} else {\n  body = 'Escolha uma das opções abaixo 👇';\n  if (!actions.length) actions = ['novo_pedido', 'falar_atendente'];\n}\nconst openId = (g.context && g.context.open_order_id) ? g.context.open_order_id : '';\nconst accepted = !!(g.context && g.context.order_accepted);\nconst _set = [];\nif (openId) _set.push('status:' + openId);\n_set.push('novo_pedido');\nif (openId && accepted) _set.push('falar_atendente');\nactions = _set.filter((v, i) => _set.indexOf(v) === i).slice(0, 3);\nconst buttons = actions.map((id) => ({ type: 'reply', reply: { id: String(id), title: titleFor(id).slice(0, 20) } }));\nconst payload = { messaging_product: 'whatsapp', recipient_type: 'individual', to: c.phone, type: 'interactive', interactive: { type: 'button', body: { text: body }, action: { buttons } } };\nreturn [{ json: { phoneNumberId: c.phoneNumberId, payload } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -23376,
+        -6032
+      ],
+      "id": "f5c169e6-c1a9-4d0a-bad0-b40b0c681776",
+      "name": "Reexibir Opções",
+      "notes": "Entrada invalida pro estado atual: reexibe os botoes do contexto, sem reiniciar o fluxo."
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst c = $('Classificar Mensagem').first().json;\nconst payload = item.payload;\nconst phoneNumberId = item.phoneNumberId;\nlet prev = {};\ntry { prev = $('Sessão Claim').first().json || {}; } catch (e) { prev = {}; }\nlet prevContext = prev.context;\nif (typeof prevContext === 'string') { try { prevContext = JSON.parse(prevContext); } catch (e) { prevContext = {}; } }\nif (!prevContext || typeof prevContext !== 'object') prevContext = {};\nlet state = 'IDLE';\nlet validActions = [];\nlet context = Object.assign({}, prevContext);\nconst hint = item.session || null;\nif (payload && payload.type === 'interactive' && payload.interactive && payload.interactive.type === 'flow') {\n  state = 'FLOW_OPEN';\n  validActions = [];\n  const params = (payload.interactive.action && payload.interactive.action.parameters) || {};\n  if (params.flow_token) context.last_flow_token = params.flow_token;\n  if (item.followup && item.followup.interactive && item.followup.interactive.action) {\n    const fb = item.followup.interactive.action.buttons || [];\n    validActions = fb.map((b) => (b.reply && b.reply.id)).filter(Boolean);\n  }\n} else if (payload && payload.type === 'interactive' && payload.interactive && payload.interactive.type === 'button') {\n  const btns = (payload.interactive.action && payload.interactive.action.buttons) || [];\n  validActions = btns.map((b) => (b.reply && b.reply.id)).filter(Boolean);\n  state = (hint && hint.state) || 'MENU';\n} else {\n  state = (hint && hint.state) || prev.state || 'IDLE';\n  validActions = (hint && hint.valid_actions) || [];\n}\nif (hint && hint.context) context = Object.assign(context, hint.context);\nconst Q = (s) => \"'\" + String(s == null ? '' : s).split(\"'\").join(\"''\") + \"'\";\nconst saveSql = 'UPDATE wa_session SET state = ' + Q(state) + ', valid_actions = ' + Q(JSON.stringify(validActions)) + '::jsonb, context = ' + Q(JSON.stringify(context)) + '::jsonb, updated_at = now() WHERE channel_id = ' + Q(String(c.phoneNumberId)) + ' AND phone = ' + Q(String(c.phone)) + ';';\nreturn [{ json: { phoneNumberId, payload, saveSql, followup: item.followup || null, hasFollowup: !!item.followup } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -20896,
+        -6192
+      ],
+      "id": "6ab115af-f6e8-4e72-8c62-6c3dfe0f3fa4",
+      "name": "Funil Envio",
+      "notes": "Ponto unico antes do envio: infere proximo state + valid_actions pelo payload (flow/botao/texto) e monta o SQL de save."
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "={{ $('Funil Envio').first().json.saveSql }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -20480,
+        -6192
+      ],
+      "id": "0ea5d6b3-9486-4db9-8b22-f150dbff1000",
+      "name": "Sessão Save",
+      "credentials": {
+        "postgres": {
+          "id": "tZ2mgy8cCNZefqzG",
+          "name": "LYM-BASE"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "notes": "Persiste state/valid_actions/context + updated_at=now() depois do envio."
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT *\nFROM wa_session",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -24384,
+        -6928
+      ],
+      "id": "f4de1e7d-97f4-4570-a356-a4ad3ef002f2",
+      "name": "Execute a SQL query",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "tZ2mgy8cCNZefqzG",
+          "name": "LYM-BASE"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -24592,
+        -6928
+      ],
+      "id": "311c36ed-3d24-4bb8-aa4e-c94b998d71a7",
+      "name": "When clicking ‘Execute workflow’"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Quando chamado pelo Webhook": {
+      "main": [
+        [
+          {
+            "node": "Config Disparo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config Disparo": {
+      "main": [
+        [
+          {
+            "node": "Classificar Mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classificar Mensagem": {
+      "main": [
+        [
+          {
+            "node": "Odoo Auth1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Tipo de Entrada": {
+      "main": [
+        [
+          {
+            "node": "Prep Pedido (Flow)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch Botão",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Odoo Customers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Botão": {
+      "main": [
+        [
+          {
+            "node": "Build Flow (Novo Pedido)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Atendente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Odoo Cliente (Status)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Odoo Customers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Flow (Novo Pedido)": {
+      "main": [
+        [
+          {
+            "node": "Funil Envio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Atendente": {
+      "main": [
+        [
+          {
+            "node": "Funil Envio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Odoo Cliente (Status)": {
+      "main": [
+        [
+          {
+            "node": "Odoo Pedido Detalhe",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Monta Fallback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Odoo Pedido Detalhe": {
+      "main": [
+        [
+          {
+            "node": "Monta Status",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Monta Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monta Status": {
+      "main": [
+        [
+          {
+            "node": "Funil Envio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Odoo Customers": {
+      "main": [
+        [
+          {
+            "node": "Avalia Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Monta Fallback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Avalia Cliente": {
+      "main": [
+        [
+          {
+            "node": "Cliente Existe?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cliente Existe?": {
+      "main": [
+        [
+          {
+            "node": "Odoo Pedidos (Cliente)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Flow (Novo Cliente)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Odoo Pedidos (Cliente)": {
+      "main": [
+        [
+          {
+            "node": "Decide Resposta",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Monta Fallback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decide Resposta": {
+      "main": [
+        [
+          {
+            "node": "Funil Envio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Flow (Novo Cliente)": {
+      "main": [
+        [
+          {
+            "node": "Funil Envio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monta Fallback": {
+      "main": [
+        [
+          {
+            "node": "Funil Envio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Odoo Auth1": {
+      "main": [
+        [
+          {
+            "node": "Prep Claim",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Monta Fallback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prep Pedido (Flow)": {
+      "main": [
+        [
+          {
+            "node": "Pagamento online?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Odoo Criar Pedido (Flow)": {
+      "main": [
+        [
+          {
+            "node": "Monta Confirmacao (Flow)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Monta Fallback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monta Confirmacao (Flow)": {
+      "main": [
+        [
+          {
+            "node": "Funil Envio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pagamento online?": {
+      "main": [
+        [
+          {
+            "node": "Monta Recebido Online (Flow)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Odoo Criar Pedido (Flow)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monta Recebido Online (Flow)": {
+      "main": [
+        [
+          {
+            "node": "Funil Envio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prep Claim": {
+      "main": [
+        [
+          {
+            "node": "Sessão Claim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sessão Claim": {
+      "main": [
+        [
+          {
+            "node": "Guarda de Contexto",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Monta Fallback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guarda de Contexto": {
+      "main": [
+        [
+          {
+            "node": "IF Prosseguir?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Prosseguir?": {
+      "main": [
+        [
+          {
+            "node": "Switch Tipo de Entrada",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reexibir Opções",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reexibir Opções": {
+      "main": [
+        [
+          {
+            "node": "Funil Envio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Funil Envio": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp (Cloud API)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar WhatsApp (Cloud API)": {
+      "main": [
+        [
+          {
+            "node": "Tem Follow-up?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem Follow-up?": {
+      "main": [
+        [
+          {
+            "node": "Enviar Follow-up",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sessão Save",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Follow-up": {
+      "main": [
+        [
+          {
+            "node": "Sessão Save",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Pedido Aceito": {
+      "main": [
+        [
+          {
+            "node": "Marca Tipo Aceito",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Pedido Saiu": {
+      "main": [
+        [
+          {
+            "node": "Marca Tipo Saiu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Marca Tipo Aceito": {
+      "main": [
+        [
+          {
+            "node": "Config Push",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Marca Tipo Saiu": {
+      "main": [
+        [
+          {
+            "node": "Config Push",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config Push": {
+      "main": [
+        [
+          {
+            "node": "Prep Push",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prep Push": {
+      "main": [
+        [
+          {
+            "node": "Enviar Push",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Push": {
+      "main": [
+        [
+          {
+            "node": "Sessão Push Save",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "d7ed5f2c-d66c-4353-94a5-42fbda4ddecb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bf9c0705358f3424eb1d41219c56e9c5f5a259e2443c6a07b72a86e802497145"
+  },
+  "id": "aqznejZy5tnbBaq9",
+  "tags": []
+}

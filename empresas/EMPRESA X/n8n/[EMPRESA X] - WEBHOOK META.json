@@ -1,5 +1,5 @@
 {
-  "name": "GRUPO AURORA - WEBHOOK",
+  "name": "[EMPRESA X] - WEBHOOK META",
   "nodes": [
     {
       "parameters": {
@@ -297,7 +297,7 @@
           "value": "VWOE9Ung4fEsQ13j",
           "mode": "list",
           "cachedResultUrl": "/workflow/VWOE9Ung4fEsQ13j",
-          "cachedResultName": "AURORA - Restaurante"
+          "cachedResultName": "[EMPRESA X] - RESTAURANTE - FLUXO PRINCIPAL"
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",

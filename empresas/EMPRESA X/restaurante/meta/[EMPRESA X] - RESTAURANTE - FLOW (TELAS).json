@@ -9,12 +9,12 @@
       "DELIVERY"
     ],
     "DELIVERY": [
+      "PAYMENT"
+    ],
+    "PAYMENT": [
       "SUMMARY"
     ],
-    "SUMMARY": [
-      "SUCCESS"
-    ],
-    "SUCCESS": []
+    "SUMMARY": []
   },
   "screens": [
     {
@@ -790,6 +790,10 @@
         "slot_20_visible": {
           "type": "boolean",
           "__example__": false
+        },
+        "catmap": {
+          "type": "string",
+          "__example__": "{}"
         }
       },
       "layout": {
@@ -812,7 +816,7 @@
             "type": "Dropdown",
             "name": "qty_1",
             "label": "${data.slot_1_title}",
-            "required": false,
+            "required": "${data.slot_1_visible}",
             "visible": "${data.slot_1_visible}",
             "data-source": [
               {
@@ -855,13 +859,23 @@
                 "id": "10",
                 "title": "10"
               }
-            ]
+            ],
+            "init-value": "1"
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_1",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_1_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
           },
           {
             "type": "Dropdown",
             "name": "qty_2",
             "label": "${data.slot_2_title}",
-            "required": false,
+            "required": "${data.slot_2_visible}",
             "visible": "${data.slot_2_visible}",
             "data-source": [
               {
@@ -904,13 +918,23 @@
                 "id": "10",
                 "title": "10"
               }
-            ]
+            ],
+            "init-value": "1"
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_2",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_2_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
           },
           {
             "type": "Dropdown",
             "name": "qty_3",
             "label": "${data.slot_3_title}",
-            "required": false,
+            "required": "${data.slot_3_visible}",
             "visible": "${data.slot_3_visible}",
             "data-source": [
               {
@@ -953,13 +977,23 @@
                 "id": "10",
                 "title": "10"
               }
-            ]
+            ],
+            "init-value": "1"
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_3",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_3_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
           },
           {
             "type": "Dropdown",
             "name": "qty_4",
             "label": "${data.slot_4_title}",
-            "required": false,
+            "required": "${data.slot_4_visible}",
             "visible": "${data.slot_4_visible}",
             "data-source": [
               {
@@ -1002,13 +1036,23 @@
                 "id": "10",
                 "title": "10"
               }
-            ]
+            ],
+            "init-value": "1"
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_4",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_4_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
           },
           {
             "type": "Dropdown",
             "name": "qty_5",
             "label": "${data.slot_5_title}",
-            "required": false,
+            "required": "${data.slot_5_visible}",
             "visible": "${data.slot_5_visible}",
             "data-source": [
               {
@@ -1051,13 +1095,23 @@
                 "id": "10",
                 "title": "10"
               }
-            ]
+            ],
+            "init-value": "1"
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_5",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_5_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
           },
           {
             "type": "Dropdown",
             "name": "qty_6",
             "label": "${data.slot_6_title}",
-            "required": false,
+            "required": "${data.slot_6_visible}",
             "visible": "${data.slot_6_visible}",
             "data-source": [
               {
@@ -1100,13 +1154,23 @@
                 "id": "10",
                 "title": "10"
               }
-            ]
+            ],
+            "init-value": "1"
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_6",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_6_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
           },
           {
             "type": "Dropdown",
             "name": "qty_7",
             "label": "${data.slot_7_title}",
-            "required": false,
+            "required": "${data.slot_7_visible}",
             "visible": "${data.slot_7_visible}",
             "data-source": [
               {
@@ -1149,13 +1213,23 @@
                 "id": "10",
                 "title": "10"
               }
-            ]
+            ],
+            "init-value": "1"
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_7",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_7_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
           },
           {
             "type": "Dropdown",
             "name": "qty_8",
             "label": "${data.slot_8_title}",
-            "required": false,
+            "required": "${data.slot_8_visible}",
             "visible": "${data.slot_8_visible}",
             "data-source": [
               {
@@ -1198,13 +1272,23 @@
                 "id": "10",
                 "title": "10"
               }
-            ]
+            ],
+            "init-value": "1"
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_8",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_8_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
           },
           {
             "type": "Dropdown",
             "name": "qty_9",
             "label": "${data.slot_9_title}",
-            "required": false,
+            "required": "${data.slot_9_visible}",
             "visible": "${data.slot_9_visible}",
             "data-source": [
               {
@@ -1247,13 +1331,23 @@
                 "id": "10",
                 "title": "10"
               }
-            ]
+            ],
+            "init-value": "1"
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_9",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_9_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
           },
           {
             "type": "Dropdown",
             "name": "qty_10",
             "label": "${data.slot_10_title}",
-            "required": false,
+            "required": "${data.slot_10_visible}",
             "visible": "${data.slot_10_visible}",
             "data-source": [
               {
@@ -1296,13 +1390,23 @@
                 "id": "10",
                 "title": "10"
               }
-            ]
+            ],
+            "init-value": "1"
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_10",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_10_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
           },
           {
             "type": "Dropdown",
             "name": "qty_11",
             "label": "${data.slot_11_title}",
-            "required": false,
+            "required": "${data.slot_11_visible}",
             "visible": "${data.slot_11_visible}",
             "data-source": [
               {
@@ -1345,13 +1449,23 @@
                 "id": "10",
                 "title": "10"
               }
-            ]
+            ],
+            "init-value": "1"
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_11",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_11_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
           },
           {
             "type": "Dropdown",
             "name": "qty_12",
             "label": "${data.slot_12_title}",
-            "required": false,
+            "required": "${data.slot_12_visible}",
             "visible": "${data.slot_12_visible}",
             "data-source": [
               {
@@ -1394,13 +1508,23 @@
                 "id": "10",
                 "title": "10"
               }
-            ]
+            ],
+            "init-value": "1"
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_12",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_12_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
           },
           {
             "type": "Dropdown",
             "name": "qty_13",
             "label": "${data.slot_13_title}",
-            "required": false,
+            "required": "${data.slot_13_visible}",
             "visible": "${data.slot_13_visible}",
             "data-source": [
               {
@@ -1443,13 +1567,23 @@
                 "id": "10",
                 "title": "10"
               }
-            ]
+            ],
+            "init-value": "1"
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_13",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_13_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
           },
           {
             "type": "Dropdown",
             "name": "qty_14",
             "label": "${data.slot_14_title}",
-            "required": false,
+            "required": "${data.slot_14_visible}",
             "visible": "${data.slot_14_visible}",
             "data-source": [
               {
@@ -1492,13 +1626,23 @@
                 "id": "10",
                 "title": "10"
               }
-            ]
+            ],
+            "init-value": "1"
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_14",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_14_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
           },
           {
             "type": "Dropdown",
             "name": "qty_15",
             "label": "${data.slot_15_title}",
-            "required": false,
+            "required": "${data.slot_15_visible}",
             "visible": "${data.slot_15_visible}",
             "data-source": [
               {
@@ -1541,13 +1685,23 @@
                 "id": "10",
                 "title": "10"
               }
-            ]
+            ],
+            "init-value": "1"
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_15",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_15_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
           },
           {
             "type": "Dropdown",
             "name": "qty_16",
             "label": "${data.slot_16_title}",
-            "required": false,
+            "required": "${data.slot_16_visible}",
             "visible": "${data.slot_16_visible}",
             "data-source": [
               {
@@ -1590,13 +1744,23 @@
                 "id": "10",
                 "title": "10"
               }
-            ]
+            ],
+            "init-value": "1"
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_16",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_16_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
           },
           {
             "type": "Dropdown",
             "name": "qty_17",
             "label": "${data.slot_17_title}",
-            "required": false,
+            "required": "${data.slot_17_visible}",
             "visible": "${data.slot_17_visible}",
             "data-source": [
               {
@@ -1639,13 +1803,23 @@
                 "id": "10",
                 "title": "10"
               }
-            ]
+            ],
+            "init-value": "1"
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_17",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_17_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
           },
           {
             "type": "Dropdown",
             "name": "qty_18",
             "label": "${data.slot_18_title}",
-            "required": false,
+            "required": "${data.slot_18_visible}",
             "visible": "${data.slot_18_visible}",
             "data-source": [
               {
@@ -1688,13 +1862,23 @@
                 "id": "10",
                 "title": "10"
               }
-            ]
+            ],
+            "init-value": "1"
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_18",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_18_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
           },
           {
             "type": "Dropdown",
             "name": "qty_19",
             "label": "${data.slot_19_title}",
-            "required": false,
+            "required": "${data.slot_19_visible}",
             "visible": "${data.slot_19_visible}",
             "data-source": [
               {
@@ -1737,13 +1921,23 @@
                 "id": "10",
                 "title": "10"
               }
-            ]
+            ],
+            "init-value": "1"
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_19",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_19_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
           },
           {
             "type": "Dropdown",
             "name": "qty_20",
             "label": "${data.slot_20_title}",
-            "required": false,
+            "required": "${data.slot_20_visible}",
             "visible": "${data.slot_20_visible}",
             "data-source": [
               {
@@ -1786,6 +1980,36 @@
                 "id": "10",
                 "title": "10"
               }
+            ],
+            "init-value": "1"
+          },
+          {
+            "type": "TextInput",
+            "name": "obs_20",
+            "label": "Observação",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.slot_20_visible}",
+            "helper-text": "Ex: sem cebola, bem passado..."
+          },
+          {
+            "type": "TextSubheading",
+            "text": "Extras"
+          },
+          {
+            "type": "RadioButtonsGroup",
+            "name": "cutlery",
+            "label": "Deseja talheres?",
+            "required": true,
+            "data-source": [
+              {
+                "id": "sim",
+                "title": "Sim"
+              },
+              {
+                "id": "nao",
+                "title": "Não"
+              }
             ]
           },
           {
@@ -1796,44 +2020,66 @@
               "payload": {
                 "q1": "${form.qty_1}",
                 "id1": "${data.slot_1_id}",
+                "obs1": "${form.obs_1}",
                 "q2": "${form.qty_2}",
                 "id2": "${data.slot_2_id}",
+                "obs2": "${form.obs_2}",
                 "q3": "${form.qty_3}",
                 "id3": "${data.slot_3_id}",
+                "obs3": "${form.obs_3}",
                 "q4": "${form.qty_4}",
                 "id4": "${data.slot_4_id}",
+                "obs4": "${form.obs_4}",
                 "q5": "${form.qty_5}",
                 "id5": "${data.slot_5_id}",
+                "obs5": "${form.obs_5}",
                 "q6": "${form.qty_6}",
                 "id6": "${data.slot_6_id}",
+                "obs6": "${form.obs_6}",
                 "q7": "${form.qty_7}",
                 "id7": "${data.slot_7_id}",
+                "obs7": "${form.obs_7}",
                 "q8": "${form.qty_8}",
                 "id8": "${data.slot_8_id}",
+                "obs8": "${form.obs_8}",
                 "q9": "${form.qty_9}",
                 "id9": "${data.slot_9_id}",
+                "obs9": "${form.obs_9}",
                 "q10": "${form.qty_10}",
                 "id10": "${data.slot_10_id}",
+                "obs10": "${form.obs_10}",
                 "q11": "${form.qty_11}",
                 "id11": "${data.slot_11_id}",
+                "obs11": "${form.obs_11}",
                 "q12": "${form.qty_12}",
                 "id12": "${data.slot_12_id}",
+                "obs12": "${form.obs_12}",
                 "q13": "${form.qty_13}",
                 "id13": "${data.slot_13_id}",
+                "obs13": "${form.obs_13}",
                 "q14": "${form.qty_14}",
                 "id14": "${data.slot_14_id}",
+                "obs14": "${form.obs_14}",
                 "q15": "${form.qty_15}",
                 "id15": "${data.slot_15_id}",
+                "obs15": "${form.obs_15}",
                 "q16": "${form.qty_16}",
                 "id16": "${data.slot_16_id}",
+                "obs16": "${form.obs_16}",
                 "q17": "${form.qty_17}",
                 "id17": "${data.slot_17_id}",
+                "obs17": "${form.obs_17}",
                 "q18": "${form.qty_18}",
                 "id18": "${data.slot_18_id}",
+                "obs18": "${form.obs_18}",
                 "q19": "${form.qty_19}",
                 "id19": "${data.slot_19_id}",
+                "obs19": "${form.obs_19}",
                 "q20": "${form.qty_20}",
-                "id20": "${data.slot_20_id}"
+                "id20": "${data.slot_20_id}",
+                "obs20": "${form.obs_20}",
+                "cutlery": "${form.cutlery}",
+                "catmap": "${data.catmap}"
               }
             }
           }
@@ -1847,6 +2093,62 @@
         "cart": {
           "type": "string",
           "__example__": "[]"
+        },
+        "cutlery": {
+          "type": "string",
+          "__example__": "nao"
+        },
+        "has_addresses": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "show_form": {
+          "type": "boolean",
+          "__example__": true
+        },
+        "address_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              }
+            }
+          },
+          "__example__": [
+            {
+              "id": "_",
+              "title": "-"
+            }
+          ]
+        },
+        "partner_id": {
+          "type": "string",
+          "__example__": ""
+        },
+        "customer_phone": {
+          "type": "string",
+          "__example__": ""
+        },
+        "customer_name": {
+          "type": "string",
+          "__example__": ""
+        },
+        "show_dropdown": {
+          "type": "boolean",
+          "__example__": false
+        },
+        "default_address": {
+          "type": "string",
+          "__example__": ""
+        },
+        "default_use_existing": {
+          "type": "string",
+          "__example__": "sim"
         }
       },
       "layout": {
@@ -1857,55 +2159,97 @@
             "text": "Dados de entrega"
           },
           {
-            "type": "TextInput",
-            "name": "customer_name",
-            "label": "Nome",
-            "input-type": "text",
-            "required": true
+            "type": "TextBody",
+            "text": "Você já tem endereços cadastrados:",
+            "visible": "${data.show_dropdown}"
           },
           {
-            "type": "TextInput",
-            "name": "phone",
-            "label": "Telefone",
-            "input-type": "phone",
-            "required": true
+            "type": "Dropdown",
+            "name": "selected_address",
+            "label": "Selecione um endereço",
+            "required": "${data.show_dropdown}",
+            "visible": "${data.show_dropdown}",
+            "data-source": "${data.address_items}",
+            "init-value": "${data.default_address}"
+          },
+          {
+            "type": "RadioButtonsGroup",
+            "name": "use_existing",
+            "label": "Usar este endereço?",
+            "required": "${data.has_addresses}",
+            "visible": "${data.has_addresses}",
+            "init-value": "${data.default_use_existing}",
+            "data-source": [
+              {
+                "id": "sim",
+                "title": "Sim"
+              },
+              {
+                "id": "nao",
+                "title": "Não, informar novo"
+              }
+            ],
+            "on-select-action": {
+              "name": "data_exchange",
+              "payload": {
+                "is_toggle": "true",
+                "use_existing": "${form.use_existing}",
+                "cart": "${data.cart}",
+                "cutlery": "${data.cutlery}",
+                "partner_id": "${data.partner_id}",
+                "customer_phone": "${data.customer_phone}",
+                "customer_name": "${data.customer_name}",
+                "address_items": "${data.address_items}",
+                "default_address": "${data.default_address}"
+              }
+            }
           },
           {
             "type": "TextInput",
             "name": "street",
             "label": "Rua",
             "input-type": "text",
-            "required": true
+            "required": "${data.show_form}",
+            "visible": "${data.show_form}"
           },
           {
             "type": "TextInput",
             "name": "number",
             "label": "Número",
             "input-type": "text",
-            "required": true
+            "required": "${data.show_form}",
+            "visible": "${data.show_form}"
           },
           {
             "type": "TextInput",
             "name": "neighborhood",
             "label": "Bairro",
             "input-type": "text",
-            "required": false
+            "required": false,
+            "visible": "${data.show_form}"
           },
           {
-            "type": "TextArea",
+            "type": "TextInput",
             "name": "complement",
-            "label": "Complemento / observações",
-            "required": false
+            "label": "Complemento",
+            "input-type": "text",
+            "required": false,
+            "visible": "${data.show_form}",
+            "helper-text": "Ex: apto 201, bloco B..."
           },
           {
             "type": "Footer",
-            "label": "Revisar pedido",
+            "label": "Continuar",
             "on-click-action": {
               "name": "data_exchange",
               "payload": {
                 "cart": "${data.cart}",
-                "customer_name": "${form.customer_name}",
-                "phone": "${form.phone}",
+                "cutlery": "${data.cutlery}",
+                "partner_id": "${data.partner_id}",
+                "customer_phone": "${data.customer_phone}",
+                "customer_name": "${data.customer_name}",
+                "selected_address": "${form.selected_address}",
+                "use_existing": "${form.use_existing}",
                 "street": "${form.street}",
                 "number": "${form.number}",
                 "neighborhood": "${form.neighborhood}",
@@ -1917,12 +2261,12 @@
       }
     },
     {
-      "id": "SUMMARY",
-      "title": "Resumo",
+      "id": "PAYMENT",
+      "title": "Pagamento",
       "data": {
         "items_text": {
           "type": "string",
-          "__example__": "2x X-Burger - R$ 25,00 = R$ 50,00\n1x Coca-Cola Lata - R$ 7,00 = R$ 7,00"
+          "__example__": "2x X-Burger - R$ 25,00\nR$ 50,00\n\n1x Coca-Cola Lata - R$ 7,00\nR$ 7,00"
         },
         "subtotal_text": {
           "type": "string",
@@ -1932,13 +2276,17 @@
           "type": "string",
           "__example__": "Frete: R$ 0,00"
         },
+        "tax_total": {
+          "type": "string",
+          "__example__": ""
+        },
         "total_text": {
           "type": "string",
           "__example__": "Total: R$ 57,00"
         },
         "delivery_text": {
           "type": "string",
-          "__example__": "Entrega: João, Rua A, 100 - Centro"
+          "__example__": "Entrega: João, Rua A, 100 - Centro\nTalheres: Não"
         },
         "order_payload": {
           "type": "string",
@@ -1950,35 +2298,79 @@
         "children": [
           {
             "type": "TextHeading",
-            "text": "Confira seu pedido"
-          },
-          {
-            "type": "TextBody",
-            "text": "${data.items_text}"
-          },
-          {
-            "type": "TextCaption",
-            "text": "${data.subtotal_text}"
-          },
-          {
-            "type": "TextCaption",
-            "text": "${data.delivery_fee_text}"
+            "text": "Forma de pagamento"
           },
           {
             "type": "TextSubheading",
             "text": "${data.total_text}"
           },
           {
-            "type": "TextCaption",
-            "text": "${data.delivery_text}"
+            "type": "RadioButtonsGroup",
+            "name": "payment_method",
+            "label": "Como deseja pagar?",
+            "required": true,
+            "data-source": [
+              {
+                "id": "online",
+                "title": "Pagamento online"
+              },
+              {
+                "id": "entrega",
+                "title": "Pagamento na entrega"
+              }
+            ]
+          },
+          {
+            "type": "If",
+            "condition": "${form.payment_method} == 'entrega'",
+            "then": [
+              {
+                "type": "RadioButtonsGroup",
+                "name": "payment_type",
+                "label": "Pagamento na entrega",
+                "required": true,
+                "data-source": [
+                  {
+                    "id": "pix",
+                    "title": "Pix"
+                  },
+                  {
+                    "id": "debito",
+                    "title": "Cartão de débito"
+                  },
+                  {
+                    "id": "credito",
+                    "title": "Cartão de crédito"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "If",
+            "condition": "${form.payment_method} == 'online'",
+            "then": [
+              {
+                "type": "TextCaption",
+                "text": "Você receberá um link do Mercado Pago para concluir o pagamento."
+              }
+            ]
           },
           {
             "type": "Footer",
-            "label": "Confirmar pedido",
+            "label": "Continuar",
             "on-click-action": {
               "name": "data_exchange",
               "payload": {
-                "order_payload": "${data.order_payload}"
+                "order_payload": "${data.order_payload}",
+                "items_text": "${data.items_text}",
+                "subtotal_text": "${data.subtotal_text}",
+                "delivery_fee_text": "${data.delivery_fee_text}",
+                "tax_total": "${data.tax_total}",
+                "total_text": "${data.total_text}",
+                "delivery_text": "${data.delivery_text}",
+                "payment_method": "${form.payment_method}",
+                "payment_type": "${form.payment_type}"
               }
             }
           }
@@ -1986,14 +2378,46 @@
       }
     },
     {
-      "id": "SUCCESS",
-      "title": "Pronto!",
+      "id": "SUMMARY",
+      "title": "Resumo",
       "terminal": true,
       "success": true,
       "data": {
-        "confirmation": {
+        "items_text": {
           "type": "string",
-          "__example__": "Pedido AURORA/0001 criado!"
+          "__example__": "2x X-Burger - R$ 25,00\nR$ 50,00\n\n1x Coca-Cola Lata - R$ 7,00\nR$ 7,00"
+        },
+        "subtotal_text": {
+          "type": "string",
+          "__example__": "Subtotal: R$ 57,00"
+        },
+        "delivery_fee_text": {
+          "type": "string",
+          "__example__": "Frete: R$ 0,00"
+        },
+        "tax_total": {
+          "type": "string",
+          "__example__": ""
+        },
+        "total_text": {
+          "type": "string",
+          "__example__": "Total: R$ 57,00"
+        },
+        "delivery_text": {
+          "type": "string",
+          "__example__": "Entrega: João, Rua A, 100 - Centro\nTalheres: Não"
+        },
+        "order_payload": {
+          "type": "string",
+          "__example__": "{}"
+        },
+        "payment_text": {
+          "type": "string",
+          "__example__": "Pagamento: Pix"
+        },
+        "flow_token": {
+          "type": "string",
+          "__example__": ""
         }
       },
       "layout": {
@@ -2001,18 +2425,41 @@
         "children": [
           {
             "type": "TextHeading",
-            "text": "Pedido enviado ✅"
+            "text": "Resumo do Pedido"
+          },
+          {
+            "type": "TextCaption",
+            "text": "${data.delivery_text}"
+          },
+          {
+            "type": "TextSubheading",
+            "text": "Itens"
           },
           {
             "type": "TextBody",
-            "text": "${data.confirmation}"
+            "text": "${data.items_text}"
+          },
+          {
+            "type": "TextCaption",
+            "text": "${data.payment_text}"
+          },
+          {
+            "type": "TextSubheading",
+            "text": "${data.total_text}"
           },
           {
             "type": "Footer",
-            "label": "Fechar",
+            "label": "Fazer pedido",
             "on-click-action": {
               "name": "complete",
-              "payload": {}
+              "payload": {
+                "order_payload": "${data.order_payload}",
+                "itens": "${data.items_text}",
+                "entrega": "${data.delivery_text}",
+                "pagamento": "${data.payment_text}",
+                "total": "${data.total_text}",
+                "flow_token": "${data.flow_token}"
+              }
             }
           }
         ]

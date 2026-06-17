@@ -1,0 +1,939 @@
+{
+  "name": "[EMPRESA X] - RESTAURANTE - BACKEND DO FLOW (DATA EXCHANGE)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "flow-endpoint-restaurante",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -12320,
+        -880
+      ],
+      "id": "730b6d49-326d-4382-977c-fdf79a588472",
+      "name": "Flow Endpoint Webhook",
+      "webhookId": "flow-endpoint-restaurante",
+      "notes": "URL: https://<n8n>/webhook/flow-endpoint-restaurante"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require(\"crypto\");\n\nconst PRIVATE_KEY = String($('Config Local').first().json.FLOW_PRIVATE_KEY)\n  .replace(/\\\\n/g, \"\\n\")\n  .trim();\nif (!PRIVATE_KEY || PRIVATE_KEY.includes(\"COLE_AQUI\")) {\n  throw new Error('Cole a chave privada RSA (PEM) no no \"Config Local\"');\n}\n\nconst wh = $('Flow Endpoint Webhook').first().json;\nconst body = wh.body || wh;\nconst { encrypted_aes_key, encrypted_flow_data, initial_vector } = body;\nif (!encrypted_aes_key || !encrypted_flow_data || !initial_vector) {\n  throw new Error(\"Request nao e um WhatsApp Flow (campos encrypted_* ausentes)\");\n}\n\nconst aesKeyBuffer = crypto.privateDecrypt(\n  { key: crypto.createPrivateKey(PRIVATE_KEY), padding: crypto.constants.RSA_PKCS1_OAEP_PADDING, oaepHash: \"sha256\" },\n  Buffer.from(encrypted_aes_key, \"base64\"),\n);\n\nconst flowDataBuffer = Buffer.from(encrypted_flow_data, \"base64\");\nconst ivBuffer = Buffer.from(initial_vector, \"base64\");\nconst TAG_LENGTH = 16;\nconst encryptedBody = flowDataBuffer.subarray(0, -TAG_LENGTH);\nconst authTag = flowDataBuffer.subarray(-TAG_LENGTH);\n\nconst decipher = crypto.createDecipheriv(\"aes-128-gcm\", aesKeyBuffer, ivBuffer);\ndecipher.setAuthTag(authTag);\nconst decryptedBody = JSON.parse(\n  Buffer.concat([decipher.update(encryptedBody), decipher.final()]).toString(\"utf-8\"),\n);\n\nconst route = decryptedBody.action === 'data_exchange' ? (decryptedBody.screen || '') : decryptedBody.action;\n\nreturn [{ json: { decryptedBody, aesKeyBuffer, ivBuffer, action: decryptedBody.action, screen: decryptedBody.screen || null, route } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -11872,
+        -880
+      ],
+      "id": "d3f2fcfc-5656-4f9f-9d42-62fba320949e",
+      "name": "Decryption",
+      "notes": "RSA-OAEP + AES-128-GCM. Gera route."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "isping",
+              "leftValue": "={{ $('Decryption').first().json.route }}",
+              "rightValue": "ping",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -11680,
+        -880
+      ],
+      "id": "b7b002dd-e7a3-487e-9801-4818faf94c33",
+      "name": "É ping?",
+      "notes": "ping nao toca no Odoo."
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { response_to_send: { data: { status: 'active' } } } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -11456,
+        -1088
+      ],
+      "id": "5d5a579b-f27a-40ce-8172-141b8b015a15",
+      "name": "Resp Ping"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config Local').first().json.ODOO_AUTH_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Odoo-Database",
+              "value": "={{ $('Config Local').first().json.ODOO_DATABASE }}"
+            },
+            {
+              "name": "api-key",
+              "value": "={{ $('Config Local').first().json.ODOO_API_KEY }}"
+            },
+            {
+              "name": "api-secret",
+              "value": "={{ $('Config Local').first().json.ODOO_API_SECRET }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -11456,
+        -768
+      ],
+      "id": "3d16b032-a47c-48ef-bf85-211b7df7e5cd",
+      "name": "Odoo Auth",
+      "notes": "POST /lym-auth/auth/token -> token (Bearer). Confira o campo (access_token?)."
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "r-INIT",
+                    "leftValue": "={{ $('Decryption').first().json.route }}",
+                    "rightValue": "INIT",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "INIT"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "r-PRODUCTS",
+                    "leftValue": "={{ $('Decryption').first().json.route }}",
+                    "rightValue": "PRODUCTS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "PRODUCTS"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "r-QUANTITIES",
+                    "leftValue": "={{ $('Decryption').first().json.route }}",
+                    "rightValue": "QUANTITIES",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "QUANTITIES"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "r-DELIVERY",
+                    "leftValue": "={{ $('Decryption').first().json.route }}",
+                    "rightValue": "DELIVERY",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "DELIVERY"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "r-SUMMARY",
+                    "leftValue": "={{ $('Decryption').first().json.route }}",
+                    "rightValue": "PAYMENT",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "PAYMENT"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -11232,
+        -768
+      ],
+      "id": "9a8674e6-1725-4050-9b53-6e294dbfbcee",
+      "name": "Rotear por Tela"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Config Local').first().json.ODOO_BASE_URL }}/lym/pos/pointofsales/companies/{{ $('Config Local').first().json.ODOO_COMPANY_ID }}/products",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "available_in_pos",
+              "value": "true"
+            },
+            {
+              "name": "limit",
+              "value": "500"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + ($('Odoo Auth').first().json.access_token || $('Odoo Auth').first().json.token) }}"
+            },
+            {
+              "name": "X-Odoo-Database",
+              "value": "={{ $('Config Local').first().json.ODOO_DATABASE }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -10992,
+        -1008
+      ],
+      "id": "9c9d2654-4dfa-42f4-95f9-66f6167b33be",
+      "name": "Odoo Produtos (INIT)",
+      "notes": "GET catalogo"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all().map((i) => i.json);\nconst products = (items.length === 1 && Array.isArray(items[0])) ? items[0] : items;\nconst brl = (v) => 'R$ ' + Number(v || 0).toFixed(2).replace('.', ',');\nconst MAX_CATS = 12, MAX_PER_CAT = 20;\nconst groups = {}; const order = [];\nproducts.forEach((p) => { const cat = (p.categ_id && p.categ_id.name) || 'Outros'; if (!groups[cat]) { groups[cat] = []; order.push(cat); } groups[cat].push(p); });\nconst warnings = [];\nif (order.length > MAX_CATS) warnings.push('Categorias: ' + order.length + ' no total, cortou ' + (order.length - MAX_CATS));\nconst data = {};\norder.slice(0, MAX_CATS).forEach((cat, i) => {\n  const n = i + 1; const list = groups[cat];\n  if (list.length > MAX_PER_CAT) warnings.push('Categoria \"' + cat + '\": ' + list.length + ' itens, cortou ' + (list.length - MAX_PER_CAT));\n  data['cat_' + n + '_name'] = String(cat).slice(0, 30);\n  data['cat_' + n + '_visible'] = true;\n  data['cat_' + n + '_items'] = list.slice(0, MAX_PER_CAT).map((p) => ({ id: String(p.id), title: String(p.name || '').slice(0, 30), description: brl(p.list_price) }));\n});\nfor (let n = 1; n <= MAX_CATS; n++) { if (!data['cat_' + n + '_visible']) { data['cat_' + n + '_name'] = ''; data['cat_' + n + '_visible'] = false; data['cat_' + n + '_items'] = [{ id: '_', title: '-' }]; } }\ndata.has_notice = false;\ndata.notice = '';\nif (warnings.length) console.log('[FLOW PRODUCTS overflow]', warnings.join(' | '));\nreturn [{ json: { response_to_send: { screen: 'PRODUCTS', data }, _warnings: warnings } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -10752,
+        -1008
+      ],
+      "id": "8168d2e6-a054-458e-a0e1-abb6ffb9885b",
+      "name": "Monta PRODUCTS",
+      "notes": "agrupa por categoria + detecta corte"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Config Local').first().json.ODOO_BASE_URL }}/lym/pos/pointofsales/companies/{{ $('Config Local').first().json.ODOO_COMPANY_ID }}/products",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "available_in_pos",
+              "value": "true"
+            },
+            {
+              "name": "limit",
+              "value": "500"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + ($('Odoo Auth').first().json.access_token || $('Odoo Auth').first().json.token) }}"
+            },
+            {
+              "name": "X-Odoo-Database",
+              "value": "={{ $('Config Local').first().json.ODOO_DATABASE }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -10992,
+        -864
+      ],
+      "id": "d26014fb-6049-431b-86cb-740ed60e4de0",
+      "name": "Odoo Produtos (slots)"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all().map((i) => i.json);\nconst products = (items.length === 1 && Array.isArray(items[0])) ? items[0] : items;\nconst byId = {};\nproducts.forEach((p) => { byId[String(p.id)] = p; });\nconst d = ($('Decryption').first().json.decryptedBody.data) || {};\nconst MAX_CATS = 12, MAX_SLOTS = 20;\nlet selected = [];\nfor (let c = 1; c <= MAX_CATS; c++) {\n  let arr = d['selected_' + c];\n  if (arr == null) continue;\n  if (!Array.isArray(arr)) arr = [arr];\n  arr.forEach((v) => { String(v).split(',').forEach((x) => selected.push(x)); });\n}\nselected = selected.map((x) => String(x).trim()).filter((x) => x && x !== '_');\nselected = selected.filter((x, i) => selected.indexOf(x) === i);\nif (selected.length === 0) {\n  const brl = (v) => 'R$ ' + Number(v || 0).toFixed(2).replace('.', ',');\n  const MAX_PER_CAT = 20;\n  const groups = {}; const order = [];\n  products.forEach((p) => { const cat = (p.categ_id && p.categ_id.name) || 'Outros'; if (!groups[cat]) { groups[cat] = []; order.push(cat); } groups[cat].push(p); });\n  const data = {};\n  order.slice(0, MAX_CATS).forEach((cat, i) => {\n    const n = i + 1; const list = groups[cat];\n    data['cat_' + n + '_name'] = String(cat).slice(0, 30);\n    data['cat_' + n + '_visible'] = true;\n    data['cat_' + n + '_items'] = list.slice(0, MAX_PER_CAT).map((p) => ({ id: String(p.id), title: String(p.name || '').slice(0, 30), description: brl(p.list_price) }));\n  });\n  for (let n = 1; n <= MAX_CATS; n++) { if (!data['cat_' + n + '_visible']) { data['cat_' + n + '_name'] = ''; data['cat_' + n + '_visible'] = false; data['cat_' + n + '_items'] = [{ id: '_', title: '-' }]; } }\n  data.has_notice = true;\n  data.notice = '\\u26a0\\ufe0f Selecione ao menos um item para continuar!';\n  return [{ json: { response_to_send: { screen: 'PRODUCTS', data } } }];\n}\nconst warnings = [];\nif (selected.length > MAX_SLOTS) warnings.push('Itens selecionados: ' + selected.length + ', cortou ' + (selected.length - MAX_SLOTS));\nconst out = {};\nselected.slice(0, MAX_SLOTS).forEach((pid, i) => {\n  const n = i + 1; const p = byId[String(pid)] || {};\n  out['slot_' + n + '_id'] = String(pid);\n  out['slot_' + n + '_title'] = String(p.name || ('Produto ' + pid)).slice(0, 20);\n  out['slot_' + n + '_visible'] = true;\n});\nfor (let n = 1; n <= MAX_SLOTS; n++) { if (!out['slot_' + n + '_visible']) { out['slot_' + n + '_id'] = ''; out['slot_' + n + '_title'] = ''; out['slot_' + n + '_visible'] = false; } }\nconst catmap = {};\nselected.slice(0, MAX_SLOTS).forEach((pid) => { const pp = byId[String(pid)] || {}; catmap[String(pid)] = (pp.categ_id && pp.categ_id.name) || 'Outros'; });\nout.catmap = JSON.stringify(catmap);\nout.has_notice = warnings.length > 0;\nout.notice = warnings.length ? ('Aviso (corte): ' + warnings.join(' | ')) : '';\nif (warnings.length) console.log('[FLOW QUANTITIES overflow]', warnings.join(' | '));\nreturn [{ json: { response_to_send: { screen: 'QUANTITIES', data: out }, _warnings: warnings } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -10752,
+        -864
+      ],
+      "id": "db8d3a57-e46f-4591-84f3-c1d4869f9972",
+      "name": "Monta QUANTITIES",
+      "notes": "junta selecionados + detecta corte"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = ($('Decryption').first().json.decryptedBody.data) || {};\nconst MAX_SLOTS = 20;\nconst cart = [];\nlet catmap = {};\ntry { catmap = JSON.parse(data.catmap || '{}'); } catch (e) { catmap = {}; }\nfor (let n = 1; n <= MAX_SLOTS; n++) {\n  const id = data['id' + n]; const q = parseInt(data['q' + n], 10);\n  if (id && q > 0) cart.push({ product_id: Number(id), quantity: q, note: data['obs' + n] || '', category: catmap[String(id)] || 'Outros' });\n}\nconst cutlery = data.cutlery || 'nao';\nlet customer = null;\ntry {\n  const searchResult = $('Busca Cliente').first().json;\n  if (searchResult && searchResult.id) customer = searchResult;\n  else if (Array.isArray(searchResult)) customer = searchResult[0] || null;\n} catch(e) { console.log('[Monta DELIVERY] Sem resultado busca cliente:', e.message); }\nconst flowToken = $('Decryption').first().json.decryptedBody.flow_token || '';\nconst tokenBody = flowToken.replace('aurora-rest-', '');\nconst lastDash = tokenBody.lastIndexOf('-');\nconst customerPhone = lastDash > 0 ? tokenBody.substring(0, lastDash) : tokenBody;\nconst deliveryData = {\n  cart: JSON.stringify(cart),\n  cutlery,\n  customer_phone: customerPhone,\n  customer_name: (customer && customer.name) || 'Cliente WhatsApp',\n  partner_id: (customer && customer.id) ? String(customer.id) : '',\n};\nconst addresses = (customer && customer.delivery_addresses) || [];\nif (addresses.length > 0) {\n  const firstAddr = addresses[0];\n  const firstId = String(firstAddr.id) + '::' + (firstAddr.street || ('Endereco ' + firstAddr.id));\n  deliveryData.has_addresses = true;\n  deliveryData.show_dropdown = true;\n  deliveryData.show_form = false;\n  deliveryData.default_address = firstId;\n  deliveryData.default_use_existing = 'sim';\n  deliveryData.address_items = addresses.map(a => ({\n    id: String(a.id) + '::' + (a.street || ('Endereco ' + a.id)),\n    title: a.street || ('Endereco ' + a.id)\n  }));\n} else {\n  deliveryData.has_addresses = false;\n  deliveryData.show_dropdown = false;\n  deliveryData.show_form = true;\n  deliveryData.default_address = '';\n  deliveryData.default_use_existing = '';\n  deliveryData.address_items = [{ id: '_', title: '-' }];\n}\nreturn [{ json: { response_to_send: { screen: 'DELIVERY', data: deliveryData } } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -10752,
+        -720
+      ],
+      "id": "b691628d-f015-4633-a656-23cf1362403b",
+      "name": "Monta DELIVERY"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = ($('Decryption').first().json.decryptedBody.data) || {};\nif (data.is_toggle === 'true' || data.is_toggle === true) {\n  const isSim = data.use_existing === 'sim';\n  let addrItems;\n  try { addrItems = typeof data.address_items === 'string' ? JSON.parse(data.address_items) : data.address_items; } catch(e) { addrItems = [{ id: '_', title: '-' }]; }\n  if (!Array.isArray(addrItems) || addrItems.length === 0) addrItems = [{ id: '_', title: '-' }];\n  return [{ json: { is_rerender: true, response_to_send: { screen: 'DELIVERY', data: {\n    cart: data.cart,\n    cutlery: data.cutlery,\n    has_addresses: true,\n    show_dropdown: isSim,\n    show_form: !isSim,\n    address_items: addrItems,\n    default_address: data.default_address || '',\n    default_use_existing: data.use_existing,\n    partner_id: data.partner_id || '',\n    customer_phone: data.customer_phone || '',\n    customer_name: data.customer_name || '',\n  } } } }];\n}\nif (data.use_existing === 'nao' && !data.street) {\n  return [{ json: { is_rerender: true, response_to_send: { screen: 'DELIVERY', data: {\n    cart: data.cart,\n    cutlery: data.cutlery,\n    has_addresses: false,\n    show_dropdown: false,\n    show_form: true,\n    address_items: [{ id: '_', title: '-' }],\n    default_address: '',\n    default_use_existing: '',\n    partner_id: data.partner_id || '',\n    customer_phone: data.customer_phone || '',\n    customer_name: data.customer_name || '',\n  } } } }];\n}\nconst cart = JSON.parse(data.cart || '[]');\nconst cutlery = data.cutlery || 'nao';\nconst POS = Number($('Config Local').first().json.ODOO_POS_CONFIG_ID);\nconst customerPhone = data.customer_phone || '';\nconst customerName = data.customer_name || 'Cliente WhatsApp';\nconst partnerId = data.partner_id || '';\nconst quoteBody = { pos_config_id: POS, lines: cart.map((c) => ({ product_id: c.product_id, quantity: c.quantity })) };\nconst orderPayload = {\n  pos_config_id: POS,\n  order_type: 'delivery',\n  lines: cart.map((c) => ({ product_id: c.product_id, quantity: c.quantity, note: c.note || undefined })),\n  cutlery: cutlery === 'sim',\n  source: 'whatsapp_flow',\n};\nlet addressText = '';\nif (data.use_existing === 'sim' && data.selected_address) {\n  const parts = data.selected_address.split('::');\n  const addressId = Number(parts[0]);\n  addressText = parts[1] || '';\n  orderPayload.partner_id = Number(partnerId);\n  orderPayload.delivery_address = { id: addressId };\n} else {\n  orderPayload.customer = { name: customerName, phone: customerPhone || 'sem-telefone' };\n  if (partnerId) orderPayload.partner_id = Number(partnerId);\n  orderPayload.delivery_address = {\n    new: { street: (data.street || '') + (data.number ? ', ' + data.number : ''), street2: data.complement || null, city: data.neighborhood || null },\n    add_new_address: true,\n  };\n}\nreturn [{ json: { is_rerender: false, quoteBody, orderPayload, cutlery, addressText } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -10992,
+        -560
+      ],
+      "id": "042efbba-3c17-4d09-8406-3e240d5846d8",
+      "name": "Prep Quote"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config Local').first().json.ODOO_BASE_URL }}/lym/pos/pointofsales/orders/quote",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + ($('Odoo Auth').first().json.access_token || $('Odoo Auth').first().json.token) }}"
+            },
+            {
+              "name": "X-Odoo-Database",
+              "value": "={{ $('Config Local').first().json.ODOO_DATABASE }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.quoteBody }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -10528,
+        -576
+      ],
+      "id": "3af61724-b1fa-4871-a3ed-1bb6946e55bf",
+      "name": "Odoo Quote"
+    },
+    {
+      "parameters": {
+        "jsCode": "const quote = $input.first().json;\nconst prep = $('Prep Quote').first().json;\nconst data = ($('Decryption').first().json.decryptedBody.data) || {};\nconst brl = (v) => 'R$ ' + Number(v || 0).toFixed(2).replace('.', ',');\nconst NL = String.fromCharCode(10);\nconst cart = JSON.parse(data.cart || '[]');\nconst groups = {}; const catOrder = [];\n(quote.lines || []).forEach((l, i) => {\n  const cat = (cart[i] && cart[i].category) || 'Outros';\n  const name = (l.product_id && l.product_id.name) || 'item';\n  const note = (cart[i] && cart[i].note) ? (' (' + cart[i].note + ')') : '';\n  if (!groups[cat]) { groups[cat] = []; catOrder.push(cat); }\n  groups[cat].push(name + ' ' + l.quantity + 'x' + note);\n});\nconst items_text = catOrder.map((cat) => cat + NL + groups[cat].join(NL)).join(NL + NL) || '(itens)';\nconst FRETE = 0;\nconst subtotal = Number(quote.amount_untaxed || 0);\nconst subtotal_text = 'Subtotal: ' + brl(subtotal);\nconst delivery_fee_text = 'Frete: ' + brl(FRETE);\nconst taxParts = [];\n(quote.lines || []).forEach((l) => { (l.taxes || []).forEach((t) => { const taxName = (t.tax_id && t.tax_id.name) || 'Taxa'; taxParts.push(taxName + ': ' + brl(t.amount)); }); });\nconst totalVal = Number(quote.amount_total || 0) + FRETE;\nconst total_text = 'Total: ' + brl(totalVal);\nconst cutleryText = prep.cutlery === 'sim' ? 'Sim' : 'Não';\nconst addrText = prep.addressText || '';\nconst delivery_text = addrText ? ('Entrega: ' + addrText + NL + 'Talheres: ' + cutleryText) : ('Entrega: ' + [[data.street, data.number].filter(Boolean).join(', '), data.neighborhood].filter(Boolean).join(' - ') + NL + 'Talheres: ' + cutleryText);\nconst tax_total = taxParts.length ? 'Taxas: ' + taxParts.join(' | ') : '';\nreturn [{ json: { response_to_send: { screen: 'PAYMENT', data: { items_text: items_text || '(itens)', subtotal_text, delivery_fee_text, total_text, delivery_text, tax_total, order_payload: JSON.stringify(prep.orderPayload) } } } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -10288,
+        -576
+      ],
+      "id": "2ba5bdb9-f956-40a8-9c9b-ae56cd524474",
+      "name": "Monta PAYMENT"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = ($('Decryption').first().json.decryptedBody.data) || {};\nlet op = {};\ntry { op = JSON.parse(data.order_payload || '{}'); } catch (e) { op = {}; }\nconst pm = data.payment_method || 'online';\nlet payment_text;\nif (pm === 'online') {\n  op.payment = { type: 'online', method: 'mercado_pago' };\n  payment_text = 'Pagamento: Online (Mercado Pago)';\n} else {\n  const pt = data.payment_type || 'pix';\n  const PT = { pix: 'Pix', debito: 'Cartão de débito', credito: 'Cartão de crédito' };\n  op.payment = { type: 'on_delivery', method: pt };\n  payment_text = 'Pagamento na entrega: ' + (PT[pt] || pt);\n}\nconst flowToken = ($('Decryption').first().json.decryptedBody.flow_token) || '';\nreturn [{ json: { response_to_send: { screen: 'SUMMARY', data: {\n  items_text: data.items_text || '(itens)',\n  subtotal_text: data.subtotal_text || '',\n  delivery_fee_text: data.delivery_fee_text || '',\n  tax_total: data.tax_total || '',\n  total_text: data.total_text || '',\n  delivery_text: data.delivery_text || '',\n  payment_text,\n  flow_token: flowToken,\n  order_payload: JSON.stringify(op)\n} } } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -10992,
+        -368
+      ],
+      "id": "b87e657b-4f03-4152-ac38-7479d28258c8",
+      "name": "Monta SUMMARY Final"
+    },
+    {
+      "parameters": {
+        "jsCode": "const d = $('Decryption').first().json;\nlet response_to_send;\nif (d.action === 'BACK') { response_to_send = { screen: d.screen || 'PRODUCTS', data: {} }; }\nelse { response_to_send = { data: { acknowledged: true } }; }\nreturn [{ json: { response_to_send } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -10992,
+        -208
+      ],
+      "id": "51d1590d-abcc-47a5-a205-d86085f25899",
+      "name": "Resp Default"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require(\"crypto\");\n\nconst responsePayload = $input.first().json.response_to_send;\n\nconst aesKeyBuffer = Buffer.from($('Decryption').first().json.aesKeyBuffer.data);\nconst ivBuffer = Buffer.from($('Decryption').first().json.ivBuffer.data);\nconst flippedIV = Buffer.from(ivBuffer.map((b) => ~b));\n\nconst cipher = crypto.createCipheriv(\"aes-128-gcm\", aesKeyBuffer, flippedIV);\nconst encryptedResponse = Buffer.concat([\n  cipher.update(JSON.stringify(responsePayload), \"utf-8\"),\n  cipher.final(),\n  cipher.getAuthTag(),\n]);\n\nreturn [{ json: { response: encryptedResponse.toString(\"base64\") } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -9840,
+        -864
+      ],
+      "id": "8355bb73-d30a-4860-85ed-30810e88531c",
+      "name": "Encryption",
+      "notes": "Recriptografa (IV invertido)."
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.response }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -9648,
+        -864
+      ],
+      "id": "c49d39f9-68d3-4136-8d4b-158353422999",
+      "name": "Respond Encrypted"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1",
+              "name": "FLOW_PRIVATE_KEY",
+              "value": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC4Y6O4Xw2ja+bA\nBYUpicYmGurMAlHVRCb6l/Xdb33Z3yp+k1GWgP03zZYTG5v1tmITnoUoS1HQlRMg\nklGRHXZom7xyVzdng9xh2xWTN3c/DmhJOXgPV6RlIojqK1KP1fnNt7au9Yd0a84x\nKnlDexjxcJHCtLsNY6zGLafB/FLNQYvKvtNyCkcPyBrD53Iqye1q+GamKFxmp6mQ\nRSR1x7PZ0RIClju2NdoKaLbqIQhho8fVVh+8eZkGvu/V3ZXmGh2Llo+22WmhwkbL\nxg7xViS0d9UY3fjlpqW/OGeU1hZp4FhFUmMn6jLC1yGEQAIP/u9v1OsF31jwn2m8\njOMh90W3AgMBAAECggEADMMYudIaZ404U2IObWmTxV9nkOc4MsKc0AtkgQcOdt3z\nWv9nTjtvS0V3dasbiE4vS5xVKwzLhNxMjpyR+LFJWMQurttKgmemAT/gpmfYYQzm\nOus3XBh80GMrhsmo1TvCJnLougNUdMJhaxW9fuYuO8fGzusjZzHW64CNc+e682nP\n1wee3BjXlc5RcA6SDWMtTrOHKP0SgFQ91S+eHYGR8ALuOMU1UfynsPNIgT1xM4Jw\n1KAAtyRRfL8AquUn6AXV9DKZDM+0MC8wmuQq1zd7Rx+rTNDn3PIk7f4o6SLcetmP\nn56mWdD8AfI5zMwG/SqGQCp6J3XZKeIpBVQ3hfZWgQKBgQDoGcwLREyUmrXWgGIb\nIl5+WKsGFaWrEzi2xcelf3HwNwz/yWmeb2waavZ71T553N4PefrQVPFRG3QoWR10\nVq8vSot+BUckIlhn4HTgyhAyPOi4YiRjI+SXs7Nzkp8RQtKvGwbwA0evkqu5N/sE\n4UwymaQyDFjQPfngLwCA8yXEXwKBgQDLYCkUuUVj+QcFmNqN5HTDZVS4zazvx4ok\nYBSP1H2HC7DBpcq/LzLaZXyIe/FRgzZZmEMUTmpyTMnL5StuBdaAbM65O7ADlcxA\nxu2G6GJANB6NVd3kcF/5RK90ucMekNCRnuECsYpBGpjpB8OlhjQgA8ArGDoyBnAY\ntPwU2oI9qQKBgQCf6t5WyPlGzo4JPC3cakLXJPq5V4LtK3JBJGaZlgUIMLYJK1pV\naon+bcJkshm410A9Q5tXnZ8jdhoDjtsnhG5x1BfmfXZ15CArelCtbSvZoXPrTtup\nX1qqV4uGTvjAaN1G/wU5q9jhlNoy5OpUg3L/zjJ+tVkgKgOXvmrHbkCQWwKBgBbe\n53/HHgCSHrIIcHuId4EJwi9OIeaNIAHbNDTAhqVLMUN1q4k4e5WH2CtZFNg/0zrc\nHp8H+nyEGiVtziZ/TZH/qne2OKMOk3utY0TKmVHzCoSGZX+tC33ytXCA+2pSisH1\nhgRRhuSvYwbBssTIhNAc2918yf6aLrz4jWii8gaRAoGBAKPQNM9ws7iw1XaAjhCH\nFUml9Id+/gt9SMfswVmEgd3ErQn3Ser1ln3vN+RUxZNSpd0ipBMY/G/fXVjYqMCz\noQtXiQO6AGQ+8qcOtxJlgupwn/P7lmh1gbW1Z0qM/db70YiMBP7evAZPX+DBljjm\nby7P8nylw2/Vnl+XL/LgA7DG\n-----END PRIVATE KEY-----",
+              "type": "string"
+            },
+            {
+              "id": "c2",
+              "name": "FLOW_PRIVATE_KEY_PASSPHRASE",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "c3",
+              "name": "ODOO_BASE_URL",
+              "value": "https://ocm19.lymtech.com.br",
+              "type": "string"
+            },
+            {
+              "id": "c4",
+              "name": "ODOO_AUTH_URL",
+              "value": "https://ocm19.lymtech.com.br/lym-auth/auth/token",
+              "type": "string"
+            },
+            {
+              "id": "c5",
+              "name": "ODOO_DATABASE",
+              "value": "pvd01",
+              "type": "string"
+            },
+            {
+              "id": "c6",
+              "name": "ODOO_API_KEY",
+              "value": "QytWfufQxqj_q5sXnkVwqQ",
+              "type": "string"
+            },
+            {
+              "id": "c7",
+              "name": "ODOO_API_SECRET",
+              "value": "gcgqQx0xR8rR3shA7wuOJy96-ac4HUeTzgCQRH4AhE8",
+              "type": "string"
+            },
+            {
+              "id": "c8",
+              "name": "ODOO_COMPANY_ID",
+              "value": "1",
+              "type": "string"
+            },
+            {
+              "id": "c9",
+              "name": "ODOO_POS_CONFIG_ID",
+              "value": "3",
+              "type": "string"
+            },
+            {
+              "id": "c10",
+              "name": "WA_TOKEN",
+              "value": "EAARN51HpxJIBQuZBNUDZA1EiW0vrUKlmbKzZAHjMvEW00HHZBZAmExQFPn5VUjv1bDxmqjycWugHcxX0UbwmzaKbvJpGS9rv1lWRUJkjeHKpMKU8XE6oSlVZA7RoQyy1jZBntATY3YaJwgRmmTiQKgq3qZCUuO32tnb82LFFENwp8VFTshuUahCLhmZB8PoEo0QZDZD",
+              "type": "string"
+            },
+            {
+              "id": "c11",
+              "name": "GRAPH_VERSION",
+              "value": "v24.0",
+              "type": "string"
+            },
+            {
+              "id": "c12",
+              "name": "WA_PHONE_NUMBER_ID",
+              "value": "928746166998844",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -12112,
+        -880
+      ],
+      "id": "f45e5128-a709-418e-89fc-9a7d6c2faa24",
+      "name": "Config Local",
+      "notes": "Chave privada RSA + credenciais Odoo (auth url, database, api-key/secret, base url, company/pos ids)."
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Config Local').first().json.ODOO_BASE_URL + '/lym/pos/pointofsales/customers/search' }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "phone",
+              "value": "={{ ($('Decryption').first().json.decryptedBody.flow_token || '').replace('aurora-rest-', '').replace(/-[0-9]+$/, '') }}"
+            },
+            {
+              "name": "limit",
+              "value": "1"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + ($('Odoo Auth').first().json.access_token || $('Odoo Auth').first().json.token) }}"
+            },
+            {
+              "name": "X-Odoo-Database",
+              "value": "={{ $('Config Local').first().json.ODOO_DATABASE }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -10992,
+        -720
+      ],
+      "id": "f8ec0192-d4ec-4082-b219-a5367582afc9",
+      "name": "Busca Cliente",
+      "onError": "continueRegularOutput",
+      "notes": "GET /customers/search?phone={phone}&limit=1. Telefone extraido do flow_token."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "is-rerender",
+              "leftValue": "={{ $json.is_rerender }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -10752,
+        -560
+      ],
+      "id": "3e8a4854-3bd6-4fae-9e24-8baf94fde6ac",
+      "name": "É re-render DELIVERY?",
+      "notes": "Se use_existing=nao, re-renderiza DELIVERY com formulario."
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Flow Endpoint Webhook": {
+      "main": [
+        [
+          {
+            "node": "Config Local",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decryption": {
+      "main": [
+        [
+          {
+            "node": "É ping?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "É ping?": {
+      "main": [
+        [
+          {
+            "node": "Resp Ping",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Odoo Auth",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Odoo Auth": {
+      "main": [
+        [
+          {
+            "node": "Rotear por Tela",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rotear por Tela": {
+      "main": [
+        [
+          {
+            "node": "Odoo Produtos (INIT)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Odoo Produtos (slots)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Busca Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prep Quote",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Monta SUMMARY Final",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Resp Default",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Odoo Produtos (INIT)": {
+      "main": [
+        [
+          {
+            "node": "Monta PRODUCTS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monta PRODUCTS": {
+      "main": [
+        [
+          {
+            "node": "Encryption",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Odoo Produtos (slots)": {
+      "main": [
+        [
+          {
+            "node": "Monta QUANTITIES",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monta QUANTITIES": {
+      "main": [
+        [
+          {
+            "node": "Encryption",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monta DELIVERY": {
+      "main": [
+        [
+          {
+            "node": "Encryption",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Busca Cliente": {
+      "main": [
+        [
+          {
+            "node": "Monta DELIVERY",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prep Quote": {
+      "main": [
+        [
+          {
+            "node": "É re-render DELIVERY?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "É re-render DELIVERY?": {
+      "main": [
+        [
+          {
+            "node": "Encryption",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Odoo Quote",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Odoo Quote": {
+      "main": [
+        [
+          {
+            "node": "Monta PAYMENT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resp Default": {
+      "main": [
+        [
+          {
+            "node": "Encryption",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resp Ping": {
+      "main": [
+        [
+          {
+            "node": "Encryption",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Encryption": {
+      "main": [
+        [
+          {
+            "node": "Respond Encrypted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config Local": {
+      "main": [
+        [
+          {
+            "node": "Decryption",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monta PAYMENT": {
+      "main": [
+        [
+          {
+            "node": "Encryption",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monta SUMMARY Final": {
+      "main": [
+        [
+          {
+            "node": "Encryption",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "d760c020-1965-4fef-9a5f-413159052ee9",
+  "meta": {
+    "instanceId": "bf9c0705358f3424eb1d41219c56e9c5f5a259e2443c6a07b72a86e802497145"
+  },
+  "id": "VWOE9Ung4fEsQ13j",
+  "tags": []
+}
